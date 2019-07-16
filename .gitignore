@@ -27,7 +27,7 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
-![Bb]in/*.dll
+![Bb]in/*/*.dll
 [Oo]bj/
 [Ll]og/
 
