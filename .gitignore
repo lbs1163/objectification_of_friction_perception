@@ -26,9 +26,10 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
-![Bb]in/**/*.dll
-![Bb]in/resources/
+/external/CHAI3D/bin/
+/external/CHAI3D/modules/**/bin/
+/bin/win-*/*
+!/bin/win-*/*.dll
 [Oo]bj/
 [Ll]og/
 
