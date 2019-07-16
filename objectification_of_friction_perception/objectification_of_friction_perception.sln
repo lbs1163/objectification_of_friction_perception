@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "objectification_of_friction_perception", "objectification_of_friction_perception.vcxproj", "{ADF02426-5686-40C7-853C-BEDD5C3D62F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2D65735-F6DE-4899-B87A-54A249263C6A} = {A2D65735-F6DE-4899-B87A-54A249263C6A}
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0} = {A9F01342-5463-4634-B1F9-BF98CD5591B0}
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18} = {71AF75A0-52B6-4C1B-8E56-CB31C6741A18}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CHAI3D", "..\external\CHAI3D\CHAI3D-VS2015.vcxproj", "{A9F01342-5463-4634-B1F9-BF98CD5591B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freeglut", "..\external\CHAI3D\extras\freeglut\freeglut-VS2015.vcxproj", "{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "..\external\CHAI3D\extras\GLFW\glfw-VS2015.vcxproj", "{A2D65735-F6DE-4899-B87A-54A249263C6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Debug|x64.ActiveCfg = Debug|x64
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Debug|x64.Build.0 = Debug|x64
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Debug|x86.ActiveCfg = Debug|Win32
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Debug|x86.Build.0 = Debug|Win32
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Release|x64.ActiveCfg = Release|x64
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Release|x64.Build.0 = Release|x64
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Release|x86.ActiveCfg = Release|Win32
+		{ADF02426-5686-40C7-853C-BEDD5C3D62F1}.Release|x86.Build.0 = Release|Win32
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Debug|x64.ActiveCfg = Debug|x64
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Debug|x64.Build.0 = Debug|x64
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Debug|x86.ActiveCfg = Debug|Win32
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Debug|x86.Build.0 = Debug|Win32
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Release|x64.ActiveCfg = Release|x64
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Release|x64.Build.0 = Release|x64
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Release|x86.ActiveCfg = Release|Win32
+		{A9F01342-5463-4634-B1F9-BF98CD5591B0}.Release|x86.Build.0 = Release|Win32
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Debug|x64.ActiveCfg = Debug|x64
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Debug|x64.Build.0 = Debug|x64
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Debug|x86.ActiveCfg = Debug|Win32
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Debug|x86.Build.0 = Debug|Win32
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Release|x64.ActiveCfg = Release|x64
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Release|x64.Build.0 = Release|x64
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Release|x86.ActiveCfg = Release|Win32
+		{71AF75A0-52B6-4C1B-8E56-CB31C6741A18}.Release|x86.Build.0 = Release|Win32
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Debug|x64.ActiveCfg = Debug|x64
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Debug|x64.Build.0 = Debug|x64
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Debug|x86.ActiveCfg = Debug|Win32
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Debug|x86.Build.0 = Debug|Win32
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Release|x64.ActiveCfg = Release|x64
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Release|x64.Build.0 = Release|x64
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Release|x86.ActiveCfg = Release|Win32
+		{A2D65735-F6DE-4899-B87A-54A249263C6A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {009BA3E1-5AAB-4F52-A346-F7352125444C}
+	EndGlobalSection
+EndGlobal
