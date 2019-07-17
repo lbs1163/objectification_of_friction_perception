@@ -1,44 +1,44 @@
 //==============================================================================
 /*
-    Software License Agreement (BSD License)
-    Copyright (c) 2003-2016, CHAI3D.
-    (www.chai3d.org)
+	Software License Agreement (BSD License)
+	Copyright (c) 2003-2016, CHAI3D.
+	(www.chai3d.org)
 
-    All rights reserved.
+	All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
 
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
 
-    * Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following
-    disclaimer in the documentation and/or other materials provided
-    with the distribution.
+	* Redistributions in binary form must reproduce the above
+	copyright notice, this list of conditions and the following
+	disclaimer in the documentation and/or other materials provided
+	with the distribution.
 
-    * Neither the name of CHAI3D nor the names of its contributors may
-    be used to endorse or promote products derived from this software
-    without specific prior written permission.
+	* Neither the name of CHAI3D nor the names of its contributors may
+	be used to endorse or promote products derived from this software
+	without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-    POSSIBILITY OF SUCH DAMAGE. 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 
-    \author    <http://www.chai3d.org>
-    \author    Francois Conti
-    \author    Dan Morris
-    \version   3.2.0 $Rev: 2014 $
+	\author    <http://www.chai3d.org>
+	\author    Francois Conti
+	\author    Dan Morris
+	\version   3.2.0 $Rev: 2014 $
 */
 //==============================================================================
 
@@ -55,6 +55,7 @@
 #include "graphics/CRenderOptions.h"
 #include "materials/CMaterial.h"
 #include "materials/CNormalMap.h"
+#include "materials/CHeightMap.h"
 #include "math/CMaths.h"
 #include "math/CTransform.h"
 #include "system/CGenericType.h"
@@ -65,915 +66,924 @@
 
 //------------------------------------------------------------------------------
 namespace chai3d {
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-class cGenericCollision;
-class cGenericForceAlgorithm;
-class cMultiMesh;
-class cShaderProgram;
-class cInteractionRecorder;
-//------------------------------------------------------------------------------
-typedef std::shared_ptr<cShaderProgram> cShaderProgramPtr;
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
+	class cGenericCollision;
+	class cGenericForceAlgorithm;
+	class cMultiMesh;
+	class cShaderProgram;
+	class cInteractionRecorder;
+	//------------------------------------------------------------------------------
+	typedef std::shared_ptr<cShaderProgram> cShaderProgramPtr;
+	//------------------------------------------------------------------------------
 
-//==============================================================================
-/*!
-    \file       CGenericObject.h
+	//==============================================================================
+	/*!
+		\file       CGenericObject.h
 
-    \brief
-    Implements a base class for all objects.
-*/
-//==============================================================================
+		\brief
+		Implements a base class for all objects.
+	*/
+	//==============================================================================
 
-//==============================================================================
-/*!
-    \class      cGenericObject
-    \ingroup    world
+	//==============================================================================
+	/*!
+		\class      cGenericObject
+		\ingroup    world
 
-    \brief
-    This class implements a base class for all 2D or 3D objects in CHAI3D.
+		\brief
+		This class implements a base class for all 2D or 3D objects in CHAI3D.
 
-    \details
-    This class is the root of basically every render-able object in CHAI3D.
-    It defines a reference frame (position and rotation) and virtual methods 
-    for rendering, which are overloaded by useful subclasses. \n
+		\details
+		This class is the root of basically every render-able object in CHAI3D.
+		It defines a reference frame (position and rotation) and virtual methods
+		for rendering, which are overloaded by useful subclasses. \n
 
-    This class also defines basic methods for maintaining a scene graph, 
-    and propagating rendering passes and reference frame changes through 
-    a hierarchy of cGenericObjects. \n
+		This class also defines basic methods for maintaining a scene graph,
+		and propagating rendering passes and reference frame changes through
+		a hierarchy of cGenericObjects. \n
 
-    The most important methods to look at here are probably the virtual 
-    methods, which are listed last in CGenericObject.h. These methods 
-    will be called on each cGenericObject as operations propagate through 
-    the scene graph.
-*/
-//==============================================================================
-class cGenericObject : public cGenericType
-{
-    friend class cMultiMesh;
+		The most important methods to look at here are probably the virtual
+		methods, which are listed last in CGenericObject.h. These methods
+		will be called on each cGenericObject as operations propagate through
+		the scene graph.
+	*/
+	//==============================================================================
+	class cGenericObject : public cGenericType
+	{
+		friend class cMultiMesh;
 
-    //--------------------------------------------------------------------------
-    // CONSTRUCTOR & DESTRUCTOR:
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		// CONSTRUCTOR & DESTRUCTOR:
+		//--------------------------------------------------------------------------
 
-public:
+	public:
 
-    //! Constructor of cGenericObject.
-    cGenericObject();
+		//! Constructor of cGenericObject.
+		cGenericObject();
 
-    //! Destructor of cGenericObject.
-    virtual ~cGenericObject();
-
-
-    //--------------------------------------------------------------------------
-    // PUBLIC METHODS - GENERAL
-    //--------------------------------------------------------------------------
-
-public:
-
-    //! This method enables or disable this object. When an object is disabled, both haptic and graphic rendering no longer occur.
-    virtual void setEnabled(bool a_enabled,  const bool a_affectChildren = false);
-
-    //! This method returns __true__ if the object is enabled, __false__ otherwise.
-    bool getEnabled() const { return (m_enabled); }
+		//! Destructor of cGenericObject.
+		virtual ~cGenericObject();
 
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - COPY:
-    //-----------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		// PUBLIC METHODS - GENERAL
+		//--------------------------------------------------------------------------
 
-public:
+	public:
 
-    //! This method creates a copy of itself.
-    virtual cGenericObject* copy(const bool a_duplicateMaterialData = false,
-        const bool a_duplicateTextureData = false, 
-        const bool a_duplicateMeshData = false,
-        const bool a_buildCollisionDetector = true) { return (NULL); }
+		//! This method enables or disable this object. When an object is disabled, both haptic and graphic rendering no longer occur.
+		virtual void setEnabled(bool a_enabled, const bool a_affectChildren = false);
+
+		//! This method returns __true__ if the object is enabled, __false__ otherwise.
+		bool getEnabled() const { return (m_enabled); }
 
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - TRANSLATION AND ORIENTATION:
-    //-----------------------------------------------------------------------
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - COPY:
+		//-----------------------------------------------------------------------
 
-public:
+	public:
 
-    //! This method sets the local position of this object.
-    virtual void setLocalPos(const cVector3d& a_localPos)
-    {
-        m_localPos = a_localPos;
-    }
+		//! This method creates a copy of itself.
+		virtual cGenericObject* copy(const bool a_duplicateMaterialData = false,
+			const bool a_duplicateTextureData = false,
+			const bool a_duplicateMeshData = false,
+			const bool a_buildCollisionDetector = true) {
+			return (NULL);
+		}
 
-#ifdef C_USE_EIGEN
-    //! This method sets the local position of this object.
-    void setLocalPos(const Eigen::Vector3d& a_localPos)
-    {
-        setLocalPos(cVector3d(a_localPos[0], a_localPos[1], a_localPos[2]));
-    }
-#endif
 
-    //! This method sets the local position of this object.
-    void setLocalPos(const double a_x = 0.0,
-        const double a_y = 0.0, 
-        const double a_z = 0.0)
-    {
-        setLocalPos(cVector3d(a_x, a_y, a_z));
-    }
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - TRANSLATION AND ORIENTATION:
+		//-----------------------------------------------------------------------
 
-    //! This method returns the local position of this object.
-    inline cVector3d getLocalPos() const { return (m_localPos); }
+	public:
 
-    //! This method returns the global position of this object.
-    inline cVector3d getGlobalPos() const { return (m_globalPos); }
-
-    //! This method sets the local rotation matrix for this object.
-    virtual void setLocalRot(const cMatrix3d& a_localRot)
-    {
-        m_localRot = a_localRot;
-    }
+		//! This method sets the local position of this object.
+		virtual void setLocalPos(const cVector3d& a_localPos)
+		{
+			m_localPos = a_localPos;
+		}
 
 #ifdef C_USE_EIGEN
-    //! This method sets the local rotation matrix for this object.
-    inline void setLocalRot(const Eigen::Matrix3d a_localRot)
-    {
-        cMatrix3d localRot;
-        localRot.copyfrom(a_localRot);
-        setLocalRot(localRot);
-    }
+		//! This method sets the local position of this object.
+		void setLocalPos(const Eigen::Vector3d& a_localPos)
+		{
+			setLocalPos(cVector3d(a_localPos[0], a_localPos[1], a_localPos[2]));
+		}
 #endif
 
-    //! This method returns the local rotation matrix of this object.
-    inline cMatrix3d getLocalRot() const { return (m_localRot); }
-
-    //! This method returns the global rotation matrix of this object.
-    inline cMatrix3d getGlobalRot() const { return (m_globalRot); }
-
-    //! This method returns the local position and rotation matrix by passing a transformation matrix.
-    inline void setLocalTransform(const cTransform& a_transform) 
-    {
-        setLocalPos(a_transform.getLocalPos());
-        setLocalRot(a_transform.getLocalRot());
-    }
-
-    //! This method returns the local position and rotation matrix in a transformation matrix.
-    inline cTransform getLocalTransform() { return (cTransform(m_localPos, m_localRot)); }
-
-    //! This method returns the global position and rotation matrix in a transformation matrix.
-    inline cTransform getGlobalTransform() { return (cTransform(m_globalPos, m_globalRot)); }
-
-    //! This method translates this object by a specified offset.
-    void translate(const cVector3d& a_translation);
-
-    //! This method translates this object by a specified offset.
-    void translate(const double a_x, 
-        const double a_y, 
-        const double a_z = 0.0);
-
-    //! This method rotates this object around a local axis. Angle magnitude is defined in radians.
-    void rotateAboutLocalAxisRad(const cVector3d& a_axis, const double a_angleRad);
-
-    //! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
-    inline void rotateAboutLocalAxisDeg(const cVector3d& a_axis,
-        const double a_angleDeg) 
-    { 
-        rotateAboutLocalAxisRad(a_axis, cDegToRad(a_angleDeg)); 
-    }
-
-    //! This method rotates this object around a local axis. Angle magnitude is defined in radians.
-    inline void rotateAboutLocalAxisRad(const double a_axisX,
-        const double a_axisY, 
-        const double a_axisZ, 
-        const double a_angleRad) 
-    { 
-        rotateAboutLocalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), a_angleRad);
-    }
-
-    //! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
-    inline void rotateAboutLocalAxisDeg(const double a_axisX,
-        const double a_axisY, 
-        const double a_axisZ, 
-        const double a_angleDeg) 
-    { 
-        rotateAboutLocalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), cDegToRad(a_angleDeg));
-    }
-
-    //! This method rotates this object around a global axis. Angle magnitude is defined in radians.
-    void rotateAboutGlobalAxisRad(const cVector3d& a_axis, const double a_angleRad);
-
-    //! This method rotates this object around a global axis. Angle magnitude is defined in degrees.
-    inline void rotateAboutGlobalAxisDeg(const cVector3d& a_axis, const double a_angleDeg) 
-    { 
-        rotateAboutGlobalAxisRad(a_axis, cDegToRad(a_angleDeg)); 
-    }
-
-    //! This method rotate this object around a local axis. Angle magnitude is defined in radians.
-    inline void rotateAboutGlobalAxisRad(const double a_axisX,
-        const double a_axisY, 
-        const double a_axisZ, 
-        const double a_angleRad) 
-    { 
-        rotateAboutGlobalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), a_angleRad);
-    }
-
-    //! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
-    inline void rotateAboutGlobalAxisDeg(const double a_axisX, 
-        const double a_axisY, 
-        const double a_axisZ, 
-        const double a_angleDeg) 
-    { 
-        rotateAboutGlobalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), cDegToRad(a_angleDeg)); 
-    }
-
-    //! This method rotates this object using fixed Euler representation. Angles are defined in radians.
-    void rotateExtrinsicEulerAnglesRad(const double& a_angleRad1,
-        const double& a_angleRad2,
-        const double& a_angleRad3,
-        const cEulerOrder a_eulerOrder);
-
-    //! This method rotates this object using fixed Euler representation. Angles are defined in radians.
-    void rotateExtrinsicEulerAnglesDeg(const double& a_angleDeg1,
-        const double& a_angleDeg2,
-        const double& a_angleDeg3,
-        const cEulerOrder a_eulerOrder) 
-    { 
-        rotateExtrinsicEulerAnglesRad(cDegToRad(a_angleDeg1), cDegToRad(a_angleDeg2), cDegToRad(a_angleDeg3), a_eulerOrder); 
-    }
-
-    //! This method rotates this object using co-moving Euler representation. Angles are defined in radians.
-    void rotateIntrinsicEulerAnglesRad(const double& a_angleRad1,
-        const double& a_angleRad2,
-        const double& a_angleRad3,
-        const cEulerOrder a_eulerOrder);
+		//! This method sets the local position of this object.
+		void setLocalPos(const double a_x = 0.0,
+			const double a_y = 0.0,
+			const double a_z = 0.0)
+		{
+			setLocalPos(cVector3d(a_x, a_y, a_z));
+		}
+
+		//! This method returns the local position of this object.
+		inline cVector3d getLocalPos() const { return (m_localPos); }
+
+		//! This method returns the global position of this object.
+		inline cVector3d getGlobalPos() const { return (m_globalPos); }
+
+		//! This method sets the local rotation matrix for this object.
+		virtual void setLocalRot(const cMatrix3d& a_localRot)
+		{
+			m_localRot = a_localRot;
+		}
+
+#ifdef C_USE_EIGEN
+		//! This method sets the local rotation matrix for this object.
+		inline void setLocalRot(const Eigen::Matrix3d a_localRot)
+		{
+			cMatrix3d localRot;
+			localRot.copyfrom(a_localRot);
+			setLocalRot(localRot);
+		}
+#endif
+
+		//! This method returns the local rotation matrix of this object.
+		inline cMatrix3d getLocalRot() const { return (m_localRot); }
+
+		//! This method returns the global rotation matrix of this object.
+		inline cMatrix3d getGlobalRot() const { return (m_globalRot); }
+
+		//! This method returns the local position and rotation matrix by passing a transformation matrix.
+		inline void setLocalTransform(const cTransform& a_transform)
+		{
+			setLocalPos(a_transform.getLocalPos());
+			setLocalRot(a_transform.getLocalRot());
+		}
+
+		//! This method returns the local position and rotation matrix in a transformation matrix.
+		inline cTransform getLocalTransform() { return (cTransform(m_localPos, m_localRot)); }
+
+		//! This method returns the global position and rotation matrix in a transformation matrix.
+		inline cTransform getGlobalTransform() { return (cTransform(m_globalPos, m_globalRot)); }
+
+		//! This method translates this object by a specified offset.
+		void translate(const cVector3d& a_translation);
+
+		//! This method translates this object by a specified offset.
+		void translate(const double a_x,
+			const double a_y,
+			const double a_z = 0.0);
+
+		//! This method rotates this object around a local axis. Angle magnitude is defined in radians.
+		void rotateAboutLocalAxisRad(const cVector3d& a_axis, const double a_angleRad);
+
+		//! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
+		inline void rotateAboutLocalAxisDeg(const cVector3d& a_axis,
+			const double a_angleDeg)
+		{
+			rotateAboutLocalAxisRad(a_axis, cDegToRad(a_angleDeg));
+		}
+
+		//! This method rotates this object around a local axis. Angle magnitude is defined in radians.
+		inline void rotateAboutLocalAxisRad(const double a_axisX,
+			const double a_axisY,
+			const double a_axisZ,
+			const double a_angleRad)
+		{
+			rotateAboutLocalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), a_angleRad);
+		}
+
+		//! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
+		inline void rotateAboutLocalAxisDeg(const double a_axisX,
+			const double a_axisY,
+			const double a_axisZ,
+			const double a_angleDeg)
+		{
+			rotateAboutLocalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), cDegToRad(a_angleDeg));
+		}
+
+		//! This method rotates this object around a global axis. Angle magnitude is defined in radians.
+		void rotateAboutGlobalAxisRad(const cVector3d& a_axis, const double a_angleRad);
+
+		//! This method rotates this object around a global axis. Angle magnitude is defined in degrees.
+		inline void rotateAboutGlobalAxisDeg(const cVector3d& a_axis, const double a_angleDeg)
+		{
+			rotateAboutGlobalAxisRad(a_axis, cDegToRad(a_angleDeg));
+		}
+
+		//! This method rotate this object around a local axis. Angle magnitude is defined in radians.
+		inline void rotateAboutGlobalAxisRad(const double a_axisX,
+			const double a_axisY,
+			const double a_axisZ,
+			const double a_angleRad)
+		{
+			rotateAboutGlobalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), a_angleRad);
+		}
 
-    //! This method rotates this object using co-moving Euler representation. Angles are defined in radians.
-    void rotateIntrinsicEulerAnglesDeg(const double& a_angleDeg1,
-        const double& a_angleDeg2,
-        const double& a_angleDeg3,
-        const cEulerOrder a_eulerOrder) 
-    { 
-        rotateIntrinsicEulerAnglesRad(cDegToRad(a_angleDeg1), cDegToRad(a_angleDeg2), cDegToRad(a_angleDeg3), a_eulerOrder); 
-    }
+		//! This method rotates this object around a local axis. Angle magnitude is defined in degrees.
+		inline void rotateAboutGlobalAxisDeg(const double a_axisX,
+			const double a_axisY,
+			const double a_axisZ,
+			const double a_angleDeg)
+		{
+			rotateAboutGlobalAxisRad(cVector3d(a_axisX, a_axisY, a_axisZ), cDegToRad(a_angleDeg));
+		}
 
+		//! This method rotates this object using fixed Euler representation. Angles are defined in radians.
+		void rotateExtrinsicEulerAnglesRad(const double& a_angleRad1,
+			const double& a_angleRad2,
+			const double& a_angleRad3,
+			const cEulerOrder a_eulerOrder);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - COMPUTING GLOBAL POSITIONS:
-    //-----------------------------------------------------------------------
+		//! This method rotates this object using fixed Euler representation. Angles are defined in radians.
+		void rotateExtrinsicEulerAnglesDeg(const double& a_angleDeg1,
+			const double& a_angleDeg2,
+			const double& a_angleDeg3,
+			const cEulerOrder a_eulerOrder)
+		{
+			rotateExtrinsicEulerAnglesRad(cDegToRad(a_angleDeg1), cDegToRad(a_angleDeg2), cDegToRad(a_angleDeg3), a_eulerOrder);
+		}
 
-public:
+		//! This method rotates this object using co-moving Euler representation. Angles are defined in radians.
+		void rotateIntrinsicEulerAnglesRad(const double& a_angleRad1,
+			const double& a_angleRad2,
+			const double& a_angleRad3,
+			const cEulerOrder a_eulerOrder);
 
-    //! This method computes the global position and rotation of this object and its children.
-    virtual void computeGlobalPositions(const bool a_frameOnly = true,
-        const cVector3d& a_globalPos = cVector3d(0.0, 0.0, 0.0),
-        const cMatrix3d& a_globalRot = cIdentity3d());
+		//! This method rotates this object using co-moving Euler representation. Angles are defined in radians.
+		void rotateIntrinsicEulerAnglesDeg(const double& a_angleDeg1,
+			const double& a_angleDeg2,
+			const double& a_angleDeg3,
+			const cEulerOrder a_eulerOrder)
+		{
+			rotateIntrinsicEulerAnglesRad(cDegToRad(a_angleDeg1), cDegToRad(a_angleDeg2), cDegToRad(a_angleDeg3), a_eulerOrder);
+		}
 
-    //! This method computes the global position and rotation of current object only.
-    void computeGlobalPositionsFromRoot(const bool a_frameOnly = true);
 
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - COMPUTING GLOBAL POSITIONS:
+		//-----------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - HAPTIC EFFECTS:
-    //-----------------------------------------------------------------------
+	public:
 
-public:
+		//! This method computes the global position and rotation of this object and its children.
+		virtual void computeGlobalPositions(const bool a_frameOnly = true,
+			const cVector3d& a_globalPos = cVector3d(0.0, 0.0, 0.0),
+			const cMatrix3d& a_globalRot = cIdentity3d());
 
-    //! This method adds a haptic effect to this object.
-    bool addEffect(cGenericEffect* a_effect);
+		//! This method computes the global position and rotation of current object only.
+		void computeGlobalPositionsFromRoot(const bool a_frameOnly = true);
 
-    //! This method removes a haptic effect from this object.
-    bool removeEffect(cGenericEffect* a_effect);
-    
-    //! This method removes all haptic effects.
-    void deleteAllEffects();
 
-    //! This method creates a magnetic haptic effect.
-    bool createEffectMagnetic();
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - HAPTIC EFFECTS:
+		//-----------------------------------------------------------------------
 
-    //! This method deletes any current magnetic haptic effect.
-    bool deleteEffectMagnetic();
+	public:
 
-    //! This method creates a stick-and-slip haptic effect.
-    bool createEffectStickSlip();
+		//! This method adds a haptic effect to this object.
+		bool addEffect(cGenericEffect* a_effect);
 
-    //! This method delete any current stick-and-slip haptic effect.
-    bool deleteEffectStickSlip();
+		//! This method removes a haptic effect from this object.
+		bool removeEffect(cGenericEffect* a_effect);
 
-    //! This method creates a surface haptic effect.
-    bool createEffectSurface();
+		//! This method removes all haptic effects.
+		void deleteAllEffects();
 
-    //! This method deletes any current surface haptic effect.
-    bool deleteEffectSurface();
+		//! This method creates a magnetic haptic effect.
+		bool createEffectMagnetic();
 
-    //! This method creates a vibration haptic effect.
-    bool createEffectVibration();
+		//! This method deletes any current magnetic haptic effect.
+		bool deleteEffectMagnetic();
 
-    //! This method deletes any current vibration haptic effect.
-    bool deleteEffectVibration();
+		//! This method creates a stick-and-slip haptic effect.
+		bool createEffectStickSlip();
 
-    //! This method creates a viscous haptic effect.
-    bool createEffectViscosity();
+		//! This method delete any current stick-and-slip haptic effect.
+		bool deleteEffectStickSlip();
 
-    //! This method deletes any current viscous haptic effect.
-    bool deleteEffectViscosity();
+		//! This method creates a surface haptic effect.
+		bool createEffectSurface();
 
-    
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - HAPTIC PROPERTIES:
-    //-----------------------------------------------------------------------
+		//! This method deletes any current surface haptic effect.
+		bool deleteEffectSurface();
 
-public:
+		//! This method creates a vibration haptic effect.
+		bool createEffectVibration();
 
-    //! This method enables or disables haptic perception of this object, optionally propagating the change to children.
-    virtual void setHapticEnabled(const bool a_hapticEnabled, const bool a_affectChildren = true);
+		//! This method deletes any current vibration haptic effect.
+		bool deleteEffectVibration();
 
-    //! This method returns the haptic status of object (__true__ means it can be felt when visible).
-    inline bool getHapticEnabled() const { return (m_hapticEnabled); }
+		//! This method creates a viscous haptic effect.
+		bool createEffectViscosity();
 
-    //! This method sets the haptic stiffness of the object, optionally recursively affecting children.
-    virtual void setStiffness(const double a_stiffness, const bool a_affectChildren = true);
+		//! This method deletes any current viscous haptic effect.
+		bool deleteEffectViscosity();
 
-    //! This method sets the static and dynamic friction properties (polygonal models only), optionally recursively affecting children.
-    virtual void setFriction(double a_staticFriction, 
-        double a_dynamicFriction, 
-        const bool a_affectChildren = true);
 
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - HAPTIC PROPERTIES:
+		//-----------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - GRAPHIC PROPERTIES:
-    //-----------------------------------------------------------------------
+	public:
 
-public:
+		//! This method enables or disables haptic perception of this object, optionally propagating the change to children.
+		virtual void setHapticEnabled(const bool a_hapticEnabled, const bool a_affectChildren = true);
 
-    //! This method enables or disables the graphic display of this object, optionally propagating the change to children.
-    virtual void setShowEnabled(const bool a_show, const bool a_affectChildren = true);
+		//! This method returns the haptic status of object (__true__ means it can be felt when visible).
+		inline bool getHapticEnabled() const { return (m_hapticEnabled); }
 
-    //! This method returns the display status of object (true means it's visible).
-    inline bool getShowEnabled() const { return (m_showEnabled); }
+		//! This method sets the haptic stiffness of the object, optionally recursively affecting children.
+		virtual void setStiffness(const double a_stiffness, const bool a_affectChildren = true);
 
-    //! This method enables or disables wireframe rendering, optionally propagating the operation to my children.
-    virtual void setWireMode(const bool a_showWireMode, const bool a_affectChildren = false);
+		//! This method sets the static and dynamic friction properties (polygonal models only), optionally recursively affecting children.
+		virtual void setFriction(double a_staticFriction,
+			double a_dynamicFriction,
+			const bool a_affectChildren = true);
 
-    //! This method returns whether wireframe rendering is enabled.
-    inline bool getWireMode() const { return (m_triangleMode == GL_LINE); }
 
-    //! This method enables or disables face-culling, optionally propagating the operation to my children.
-    virtual void setUseCulling(const bool a_useCulling, const bool a_affectChildren = false);
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - GRAPHIC PROPERTIES:
+		//-----------------------------------------------------------------------
 
-    //! This method returns __true__ if face-culling is enabled, __false__ otherwise.
-    inline bool getUseCulling() const { return (m_cullingEnabled); }
+	public:
 
+		//! This method enables or disables the graphic display of this object, optionally propagating the change to children.
+		virtual void setShowEnabled(const bool a_show, const bool a_affectChildren = true);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - TRANSPARENCY:
-    //-----------------------------------------------------------------------
+		//! This method returns the display status of object (true means it's visible).
+		inline bool getShowEnabled() const { return (m_showEnabled); }
 
-    //! This method enables or disables transparency.
-    virtual void setUseTransparency(const bool a_useTransparency, const bool a_affectChildren = false);
+		//! This method enables or disables wireframe rendering, optionally propagating the operation to my children.
+		virtual void setWireMode(const bool a_showWireMode, const bool a_affectChildren = false);
 
-    //! This method returns __true__ if transparency is enabled, __false__ otherwise.
-    inline bool getUseTransparency() const { return m_useTransparency; }
+		//! This method returns whether wireframe rendering is enabled.
+		inline bool getWireMode() const { return (m_triangleMode == GL_LINE); }
 
-    //! This method sets the transparency level of the object.
-    virtual void setTransparencyLevel(const float a_level,
-        const bool a_applyToVertices = false,
-        const bool a_applyToTextures = false,
-        const bool a_affectChildren = false);
+		//! This method enables or disables face-culling, optionally propagating the operation to my children.
+		virtual void setUseCulling(const bool a_useCulling, const bool a_affectChildren = false);
 
+		//! This method returns __true__ if face-culling is enabled, __false__ otherwise.
+		inline bool getUseCulling() const { return (m_cullingEnabled); }
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - DISPLAY LISTS:
-    //-----------------------------------------------------------------------
 
-public:
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - TRANSPARENCY:
+		//-----------------------------------------------------------------------
 
-    //! This method enabled or disables the use of a display list for rendering, optionally propagating the operation to its children.
-    virtual void setUseDisplayList(const bool a_useDisplayList, const bool a_affectChildren = false);
+		//! This method enables or disables transparency.
+		virtual void setUseTransparency(const bool a_useTransparency, const bool a_affectChildren = false);
 
-    //! This method returns __true__ if a display list is activated, __false__ otherwise.
-    inline bool getUseDisplayList() const { return (m_useDisplayList); }
+		//! This method returns __true__ if transparency is enabled, __false__ otherwise.
+		inline bool getUseTransparency() const { return m_useTransparency; }
 
-    //! This method invalidates any existing display lists, optionally propagating the operation to its children.
-    virtual void markForUpdate(const bool a_affectChildren = false);
+		//! This method sets the transparency level of the object.
+		virtual void setTransparencyLevel(const float a_level,
+			const bool a_applyToVertices = false,
+			const bool a_applyToTextures = false,
+			const bool a_affectChildren = false);
 
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - VERTEX COLORS:
-    //-----------------------------------------------------------------------
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - DISPLAY LISTS:
+		//-----------------------------------------------------------------------
 
-public:
+	public:
 
-    //! This method enables or disables the use of per-vertex colors, optionally propagating the operation to its children.
-    virtual void setUseVertexColors(const bool a_useColors, const bool a_affectChildren = false);
+		//! This method enabled or disables the use of a display list for rendering, optionally propagating the operation to its children.
+		virtual void setUseDisplayList(const bool a_useDisplayList, const bool a_affectChildren = false);
 
-    //! This method returns __true__ is per-vertex color properties are enabled, __false__ otherwise.
-    inline bool getUseVertexColors() const { return (m_useVertexColors); }
+		//! This method returns __true__ if a display list is activated, __false__ otherwise.
+		inline bool getUseDisplayList() const { return (m_useDisplayList); }
 
+		//! This method invalidates any existing display lists, optionally propagating the operation to its children.
+		virtual void markForUpdate(const bool a_affectChildren = false);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - MATERIAL PROPERTIES:
-    //-----------------------------------------------------------------------
 
-public:
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - VERTEX COLORS:
+		//-----------------------------------------------------------------------
 
-    //! This method enables or disables the use of material properties, optionally propagating the operation to its children.
-    virtual void setUseMaterial(const bool a_useMaterial, const bool a_affectChildren = false);
+	public:
 
-    //! This method returns __true__ is material properties are enabled, __false__ otherwise.
-    inline bool getUseMaterial() const { return (m_useMaterialProperty); }
+		//! This method enables or disables the use of per-vertex colors, optionally propagating the operation to its children.
+		virtual void setUseVertexColors(const bool a_useColors, const bool a_affectChildren = false);
 
-    //! This method sets the material properties of this object, optionally propagating the operation to its children.
-    virtual void setMaterial(cMaterialPtr a_material, const bool a_affectChildren = false);
+		//! This method returns __true__ is per-vertex color properties are enabled, __false__ otherwise.
+		inline bool getUseVertexColors() const { return (m_useVertexColors); }
 
-    //! This method setd the material properties of this object, optionally propagating the operation to its children.
-    virtual void setMaterial(cMaterial& a_material, const bool a_affectChildren = false);
 
-    //! This method creates a backup of the material colors of this object, optionally propagating the operation to its children.
-    virtual void backupMaterialColors(const bool a_affectChildren = false);
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - MATERIAL PROPERTIES:
+		//-----------------------------------------------------------------------
 
-    //! This method restores the material color properties of this object from a previous backup, optionally propagating the operation to its children.
-    virtual void restoreMaterialColors(const bool a_affectChildren = false);
+	public:
 
+		//! This method enables or disables the use of material properties, optionally propagating the operation to its children.
+		virtual void setUseMaterial(const bool a_useMaterial, const bool a_affectChildren = false);
 
-    //--------------------------------------------------------------------------
-    // PUBLIC METHODS - TEXTURE PROPERTIES:
-    //-----------------------------------------------------------------------
+		//! This method returns __true__ is material properties are enabled, __false__ otherwise.
+		inline bool getUseMaterial() const { return (m_useMaterialProperty); }
 
-public:
+		//! This method sets the material properties of this object, optionally propagating the operation to its children.
+		virtual void setMaterial(cMaterialPtr a_material, const bool a_affectChildren = false);
 
-    //! This method enables or disables the use of texture-mapping, optionally propagating the operation to its children.
-    virtual void setUseTexture(const bool a_useTexture, const bool a_affectChildren = false);
+		//! This method setd the material properties of this object, optionally propagating the operation to its children.
+		virtual void setMaterial(cMaterial& a_material, const bool a_affectChildren = false);
 
-    //! This method returns __true__ if texture-mapping is enabled, __false__ otherwise.
-    inline bool getUseTexture() const { return (m_useTextureMapping); }
+		//! This method creates a backup of the material colors of this object, optionally propagating the operation to its children.
+		virtual void backupMaterialColors(const bool a_affectChildren = false);
 
-    //! This method sets a texture to this object, optionally propagating the operation to its children.
-    virtual void setTexture(cTexture1dPtr a_texture, const bool a_affectChildren = false);
+		//! This method restores the material color properties of this object from a previous backup, optionally propagating the operation to its children.
+		virtual void restoreMaterialColors(const bool a_affectChildren = false);
 
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - SHADERS:
-    //-----------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		// PUBLIC METHODS - TEXTURE PROPERTIES:
+		//-----------------------------------------------------------------------
 
-public:
+	public:
 
-    //! This method assigns a shader program to this object, optionally propagating the operation to its children..
-    virtual void setShaderProgram(cShaderProgramPtr a_shaderProgram, const bool a_affectChildren = false);
+		//! This method enables or disables the use of texture-mapping, optionally propagating the operation to its children.
+		virtual void setUseTexture(const bool a_useTexture, const bool a_affectChildren = false);
 
-    //! This method returns a pointer to the current shader program.
-    virtual cShaderProgramPtr getShaderProgram() { return (m_shaderProgram); }
+		//! This method returns __true__ if texture-mapping is enabled, __false__ otherwise.
+		inline bool getUseTexture() const { return (m_useTextureMapping); }
 
+		//! This method sets a texture to this object, optionally propagating the operation to its children.
+		virtual void setTexture(cTexture1dPtr a_texture, const bool a_affectChildren = false);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC MEMBERS - BOUNDARY BOX:
-    //-----------------------------------------------------------------------
 
-public:
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - SHADERS:
+		//-----------------------------------------------------------------------
 
-    //! Color of the boundary box.
-    static cColorf s_boundaryBoxColor;
+	public:
 
+		//! This method assigns a shader program to this object, optionally propagating the operation to its children..
+		virtual void setShaderProgram(cShaderProgramPtr a_shaderProgram, const bool a_affectChildren = false);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - BOUNDARY BOX:
-    //-----------------------------------------------------------------------
+		//! This method returns a pointer to the current shader program.
+		virtual cShaderProgramPtr getShaderProgram() { return (m_shaderProgram); }
 
-public:
 
-    //! This method enables or disabled the graphic display of the boundary box for this object, optionally propagating the change to its children.
-    virtual void setShowBoundaryBox(const bool a_showBoundaryBox, const bool a_affectChildren = false);
+		//-----------------------------------------------------------------------
+		// PUBLIC MEMBERS - BOUNDARY BOX:
+		//-----------------------------------------------------------------------
 
-    //! This method returns __true__ if the boundary box is being displayed, __false__ otherwise.
-    inline bool getShowBoundaryBox() const { return (m_showBoundaryBox); }
+	public:
 
-    //! This method returns the minimum point of this object's boundary box.
-    inline cVector3d getBoundaryMin() const { return (m_boundaryBoxMin); }
+		//! Color of the boundary box.
+		static cColorf s_boundaryBoxColor;
 
-    //! This method returns the maximum point of this object's boundary box.
-    inline cVector3d getBoundaryMax() const { return (m_boundaryBoxMax); }
 
-    //! This method computes and returns the center of this object's boundary box.
-    inline cVector3d getBoundaryCenter() const { return (m_boundaryBoxMax + m_boundaryBoxMin)/2.0; }
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - BOUNDARY BOX:
+		//-----------------------------------------------------------------------
 
-    //! This method returns __true__, if the boundary box is empty, otherwise __false__.
-    inline bool getBoundaryBoxEmpty() { return (m_boundaryBoxEmpty); }
+	public:
 
-    //! This method computes this object's boundary box, optionally forcing it to bound child objects.
-    virtual void computeBoundaryBox(const bool a_includeChildren = true);
+		//! This method enables or disabled the graphic display of the boundary box for this object, optionally propagating the change to its children.
+		virtual void setShowBoundaryBox(const bool a_showBoundaryBox, const bool a_affectChildren = false);
 
+		//! This method returns __true__ if the boundary box is being displayed, __false__ otherwise.
+		inline bool getShowBoundaryBox() const { return (m_showBoundaryBox); }
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - REFERENCE FRAME REPRESENTATION:
-    //-----------------------------------------------------------------------
+		//! This method returns the minimum point of this object's boundary box.
+		inline cVector3d getBoundaryMin() const { return (m_boundaryBoxMin); }
 
-public:
+		//! This method returns the maximum point of this object's boundary box.
+		inline cVector3d getBoundaryMax() const { return (m_boundaryBoxMax); }
 
-    //! This method enables or disables the graphic display of the reference frame arrows for this object, optionally propagating the change to its children.
-    virtual void setShowFrame(const bool a_showFrame, const bool a_affectChildren  = false);
+		//! This method computes and returns the center of this object's boundary box.
+		inline cVector3d getBoundaryCenter() const { return (m_boundaryBoxMax + m_boundaryBoxMin) / 2.0; }
 
-    //! This method returns __true__ if the display of the reference frame is enabled, __false__ otherwise.
-    inline bool getShowFrame(void) const { return (m_showFrame); }
+		//! This method returns __true__, if the boundary box is empty, otherwise __false__.
+		inline bool getBoundaryBoxEmpty() { return (m_boundaryBoxEmpty); }
 
-    //! This method sets the size of the rendered reference frame, optionally propagating the change to its children.
-    virtual void setFrameSize(const double a_size = 1.0, const bool a_affectChildren = false);
+		//! This method computes this object's boundary box, optionally forcing it to bound child objects.
+		virtual void computeBoundaryBox(const bool a_includeChildren = true);
 
-    //! This method returns the size of the graphical reference frame.
-    inline double getFrameSize() const { return (m_frameSize); }
 
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - REFERENCE FRAME REPRESENTATION:
+		//-----------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - COLLISION DETECTION:
-    //-----------------------------------------------------------------------
+	public:
 
-public:
+		//! This method enables or disables the graphic display of the reference frame arrows for this object, optionally propagating the change to its children.
+		virtual void setShowFrame(const bool a_showFrame, const bool a_affectChildren = false);
 
-    //! This method sets a collision detector to this current object.
-    void setCollisionDetector(cGenericCollision* a_collisionDetector) { m_collisionDetector = a_collisionDetector; }
+		//! This method returns __true__ if the display of the reference frame is enabled, __false__ otherwise.
+		inline bool getShowFrame(void) const { return (m_showFrame); }
 
-    //! This method returns a pointer to this object's current collision detector.
-    inline cGenericCollision* getCollisionDetector() const { return (m_collisionDetector); }
+		//! This method sets the size of the rendered reference frame, optionally propagating the change to its children.
+		virtual void setFrameSize(const double a_size = 1.0, const bool a_affectChildren = false);
 
-    //! This method deletes any existing collision detector.
-    virtual void deleteCollisionDetector(const bool a_affectChildren = false);
+		//! This method returns the size of the graphical reference frame.
+		inline double getFrameSize() const { return (m_frameSize); }
 
-    //! This method computes any collision between a segment and this object.
-    virtual bool computeCollisionDetection(const cVector3d& a_segmentPointA,
-        const cVector3d& a_segmentPointB,
-        cCollisionRecorder& a_recorder,
-        cCollisionSettings& a_settings);
 
-    //! This method enables or disables the display of the collision detector, optionally propagating the change to its children.
-    virtual void setShowCollisionDetector(const bool a_showCollisionDetector, const bool a_affectChildren = false);
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - COLLISION DETECTION:
+		//-----------------------------------------------------------------------
 
-    //! This method returns __true__ if the collision detector is being displayed graphically, __false__ otherwise.
-    inline bool getShowCollisionDetector() { return (m_showCollisionDetector); }
+	public:
 
-    //! This method sets the collision detector graphic display properties.
-    virtual void setCollisionDetectorProperties(unsigned int a_displayDepth, 
-        cColorf& a_color, 
-        const bool a_affectChildren = false);
+		//! This method sets a collision detector to this current object.
+		void setCollisionDetector(cGenericCollision* a_collisionDetector) { m_collisionDetector = a_collisionDetector; }
 
+		//! This method returns a pointer to this object's current collision detector.
+		inline cGenericCollision* getCollisionDetector() const { return (m_collisionDetector); }
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - SCENE GRAPH:
-    //-----------------------------------------------------------------------
+		//! This method deletes any existing collision detector.
+		virtual void deleteCollisionDetector(const bool a_affectChildren = false);
 
-public:
+		//! This method computes any collision between a segment and this object.
+		virtual bool computeCollisionDetection(const cVector3d& a_segmentPointA,
+			const cVector3d& a_segmentPointB,
+			cCollisionRecorder& a_recorder,
+			cCollisionSettings& a_settings);
 
-    //! This method sets the parent of this object.
-    inline void setParent(cGenericObject* a_parent) { m_parent = a_parent; }
+		//! This method enables or disables the display of the collision detector, optionally propagating the change to its children.
+		virtual void setShowCollisionDetector(const bool a_showCollisionDetector, const bool a_affectChildren = false);
 
-    //! This method returns the parent of this object.
-    inline cGenericObject* getParent() const { return (m_parent); }
+		//! This method returns __true__ if the collision detector is being displayed graphically, __false__ otherwise.
+		inline bool getShowCollisionDetector() { return (m_showCollisionDetector); }
 
-    //! This method sets a link to an object that owns this object. This could be a super parent for instance.
-    inline void setOwner(cGenericObject* a_owner) { m_owner = a_owner; }
+		//! This method sets the collision detector graphic display properties.
+		virtual void setCollisionDetectorProperties(unsigned int a_displayDepth,
+			cColorf& a_color,
+			const bool a_affectChildren = false);
 
-    //! This method returns the owner of this object.
-    inline cGenericObject* getOwner() { return (m_owner); }
 
-    //! This method returns a selected child from the list of children.
-    inline cGenericObject* getChild(const unsigned int a_index) const { return (m_children[a_index]); }
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - SCENE GRAPH:
+		//-----------------------------------------------------------------------
 
-    //! This method add an object to the list of children.
-    bool addChild(cGenericObject* a_object);
+	public:
 
-    //! This method removes an object from the list of children, without deleting it.
-    bool removeChild(cGenericObject* a_object);
+		//! This method sets the parent of this object.
+		inline void setParent(cGenericObject* a_parent) { m_parent = a_parent; }
 
-    //! This method removes this object from its parent's list of children.
-    bool removeFromGraph();
+		//! This method returns the parent of this object.
+		inline cGenericObject* getParent() const { return (m_parent); }
 
-    //! This method removes an object from its list of children and deletes it.
-    bool deleteChild(cGenericObject *a_object);
+		//! This method sets a link to an object that owns this object. This could be a super parent for instance.
+		inline void setOwner(cGenericObject* a_owner) { m_owner = a_owner; }
 
-    //! This method clears all objects from its list of children, without deleting them.
-    void clearAllChildren();
+		//! This method returns the owner of this object.
+		inline cGenericObject* getOwner() { return (m_owner); }
 
-    //! This method clears and delete all objects from its list of children.
-    void deleteAllChildren();
+		//! This method returns a selected child from the list of children.
+		inline cGenericObject* getChild(const unsigned int a_index) const { return (m_children[a_index]); }
 
-    //! This method returns the number of children from its list of children.
-    inline unsigned int getNumChildren() { return ((unsigned int)m_children.size()); }
+		//! This method add an object to the list of children.
+		bool addChild(cGenericObject* a_object);
 
-    //! This method returns the total number of descendants, optionally including this object.
-    inline unsigned int getNumDescendants(bool a_includeCurrentObject = false);
+		//! This method removes an object from the list of children, without deleting it.
+		bool removeChild(cGenericObject* a_object);
 
+		//! This method removes this object from its parent's list of children.
+		bool removeFromGraph();
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - GHOSTING:
-    //-----------------------------------------------------------------------
+		//! This method removes an object from its list of children and deletes it.
+		bool deleteChild(cGenericObject* a_object);
 
-public:
+		//! This method clears all objects from its list of children, without deleting them.
+		void clearAllChildren();
 
-    //! This method enables or disables this object to be a ghost node.
-    void setGhostEnabled(bool a_ghostEnabled) { m_ghostEnabled = a_ghostEnabled; }
+		//! This method clears and delete all objects from its list of children.
+		void deleteAllChildren();
 
-    //! This method returns __truee__ if this object is a ghost node.
-    bool getGhostEnabled() { return (m_ghostEnabled); }
+		//! This method returns the number of children from its list of children.
+		inline unsigned int getNumChildren() { return ((unsigned int)m_children.size()); }
 
+		//! This method returns the total number of descendants, optionally including this object.
+		inline unsigned int getNumDescendants(bool a_includeCurrentObject = false);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC METHODS - GEOMETRY:
-    //-----------------------------------------------------------------------
 
-public:
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - GHOSTING:
+		//-----------------------------------------------------------------------
 
-    //! This method scales the size of this object.
-    virtual void scale(const double& a_scaleFactor, const bool a_affectChildren = true);
+	public:
 
+		//! This method enables or disables this object to be a ghost node.
+		void setGhostEnabled(bool a_ghostEnabled) { m_ghostEnabled = a_ghostEnabled; }
 
-    //-----------------------------------------------------------------------
-    // PUBLIC MEMBERS - PROPERTIES:
-    //-----------------------------------------------------------------------
+		//! This method returns __truee__ if this object is a ghost node.
+		bool getGhostEnabled() { return (m_ghostEnabled); }
 
-public: 
 
-    //! Name of current object (filename).
-    std::string m_name;
+		//-----------------------------------------------------------------------
+		// PUBLIC METHODS - GEOMETRY:
+		//-----------------------------------------------------------------------
 
-    //! Material property.
-    cMaterialPtr m_material;
+	public:
 
-    //! Texture property.
-    cTexture1dPtr m_texture;
+		//! This method scales the size of this object.
+		virtual void scale(const double& a_scaleFactor, const bool a_affectChildren = true);
 
-    //! Normal map property.
-    cNormalMapPtr m_normalMap;
 
+		//-----------------------------------------------------------------------
+		// PUBLIC MEMBERS - PROPERTIES:
+		//-----------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------
-    // PUBLIC MEMBERS - CUSTOM USER DATA:
-    //-----------------------------------------------------------------------
+	public:
 
-public:
+		//! Name of current object (filename).
+		std::string m_name;
 
-    //! An arbitrary tag, not used by CHAI3D.
-    int m_userTag;
+		//! Material property.
+		cMaterialPtr m_material;
 
-    //! An arbitrary data pointer, not used by CHAI3D.
-    void* m_userData;
+		//! Texture property.
+		cTexture1dPtr m_texture;
 
-    //! Name of current object, not used by CHAI3D.
-    std::string m_userName;
+		//! Normal map property.
+		cNormalMapPtr m_normalMap;
 
-    //! A link to an external cGenericObject object, not used by CHAI3D.
-    cGenericObject* m_userExternalObject;
+		//! Height map property.
+		cHeightMapPtr m_heightMap;
 
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - SCENEGRAPH:
-    //-----------------------------------------------------------------------
+		//-----------------------------------------------------------------------
+		// PUBLIC MEMBERS - CUSTOM USER DATA:
+		//-----------------------------------------------------------------------
 
-protected:
+	public:
 
-    //! Parent object.
-    cGenericObject* m_parent;
+		//! An arbitrary tag, not used by CHAI3D.
+		int m_userTag;
 
-    /*!
-        For most objects this value is initialized to point to the object itself.
-        In the case of cMultiMesh, all mesh objects contained in cMultimesh are
-        owned by their parent (cMultiMesh). 
-    */
-    cGenericObject* m_owner;
+		//! An arbitrary data pointer, not used by CHAI3D.
+		void* m_userData;
 
-    //! List of children.
-    std::vector<cGenericObject*> m_children;
+		//! Name of current object, not used by CHAI3D.
+		std::string m_userName;
 
+		//! A link to an external cGenericObject object, not used by CHAI3D.
+		cGenericObject* m_userExternalObject;
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - POSITION & ORIENTATION:
-    //-----------------------------------------------------------------------
 
-protected:
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - SCENEGRAPH:
+		//-----------------------------------------------------------------------
 
-    //! The position of this object in my parent's reference frame.
-    cVector3d m_localPos;
+	protected:
 
-    //! The position of this object in the world's reference frame.
-    cVector3d m_globalPos;
+		//! Parent object.
+		cGenericObject* m_parent;
 
-    //! The rotation matrix that rotates my reference frame into my parent's reference frame.
-    cMatrix3d m_localRot;
+		/*!
+			For most objects this value is initialized to point to the object itself.
+			In the case of cMultiMesh, all mesh objects contained in cMultimesh are
+			owned by their parent (cMultiMesh).
+		*/
+		cGenericObject* m_owner;
 
-    //! The rotation matrix that rotates my reference frame into the world's reference frame.
-    cMatrix3d m_globalRot;
+		//! List of children.
+		std::vector<cGenericObject*> m_children;
 
-    //! Previous position since last haptic computation.
-    cVector3d m_prevGlobalPos;
 
-    //! Previous rotation since last haptic computation.
-    cMatrix3d m_prevGlobalRot;
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - POSITION & ORIENTATION:
+		//-----------------------------------------------------------------------
 
+	protected:
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - BOUNDARY BOX
-    //-----------------------------------------------------------------------
+		//! The position of this object in my parent's reference frame.
+		cVector3d m_localPos;
 
-protected:
+		//! The position of this object in the world's reference frame.
+		cVector3d m_globalPos;
 
-    //! Minimum position of boundary box.
-    cVector3d m_boundaryBoxMin;
+		//! The rotation matrix that rotates my reference frame into my parent's reference frame.
+		cMatrix3d m_localRot;
 
-    //! Maximum position of boundary box.
-    cVector3d m_boundaryBoxMax;
+		//! The rotation matrix that rotates my reference frame into the world's reference frame.
+		cMatrix3d m_globalRot;
 
-    //! If __true__, then the boundary box does not include any object.
-    bool m_boundaryBoxEmpty;
+		//! Previous position since last haptic computation.
+		cVector3d m_prevGlobalPos;
 
+		//! Previous rotation since last haptic computation.
+		cMatrix3d m_prevGlobalRot;
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - FRAME REPRESENTATION [X,Y,Z]:
-    //-----------------------------------------------------------------------
 
-protected:
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - BOUNDARY BOX
+		//-----------------------------------------------------------------------
 
-    //! Size of graphical representation of frame (X-Y-Z).
-    double m_frameSize;
+	protected:
 
-    //! Pen thickness of graphical representation of frame (X-Y-Z).
-    double m_frameThicknessScale;
+		//! Minimum position of boundary box.
+		cVector3d m_boundaryBoxMin;
 
+		//! Maximum position of boundary box.
+		cVector3d m_boundaryBoxMax;
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - GENERAL OPTIONS:
-    //-----------------------------------------------------------------------
+		//! If __true__, then the boundary box does not include any object.
+		bool m_boundaryBoxEmpty;
 
-protected:
 
-    //! If __true__, the object may be rendered graphically and haptically.
-    bool m_enabled;
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - FRAME REPRESENTATION [X,Y,Z]:
+		//-----------------------------------------------------------------------
 
-    //! If __true__, this object is rendered.
-    bool m_showEnabled;
+	protected:
 
-    //! If __true__, this object can be felt.
-    bool m_hapticEnabled;
+		//! Size of graphical representation of frame (X-Y-Z).
+		double m_frameSize;
 
-    //! If __true__, object is enabled as ghost. 
-    bool m_ghostEnabled;
+		//! Pen thickness of graphical representation of frame (X-Y-Z).
+		double m_frameThicknessScale;
 
-    //! If __true__, this object's reference frame is rendered as a set of arrows.
-    bool m_showFrame;
 
-    //! If __true__, this object's boundary box is displayed as a set of lines.
-    bool m_showBoundaryBox;
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - GENERAL OPTIONS:
+		//-----------------------------------------------------------------------
 
-    //! If __true__, the collision detector is displayed (if available) at this node.
-    bool m_showCollisionDetector;
+	protected:
 
-    //! Should texture mapping be used?
-    bool m_useTextureMapping;
+		//! If __true__, the object may be rendered graphically and haptically.
+		bool m_enabled;
 
-    //! Should material properties be used?
-    bool m_useMaterialProperty;
+		//! If __true__, this object is rendered.
+		bool m_showEnabled;
 
-    //! Should per-vertex colors be used?
-    bool m_useVertexColors;
+		//! If __true__, this object can be felt.
+		bool m_hapticEnabled;
 
-    //! Should we use a display list to render this mesh?
-    bool m_useDisplayList;
+		//! If __true__, object is enabled as ghost. 
+		bool m_ghostEnabled;
 
-    //! Basic display list for current object.
-    cDisplayList m_displayList;
+		//! If __true__, this object's reference frame is rendered as a set of arrows.
+		bool m_showFrame;
 
-    //! The polygon rendering mode (GL_FILL or GL_LINE).
-    int m_triangleMode;
+		//! If __true__, this object's boundary box is displayed as a set of lines.
+		bool m_showBoundaryBox;
 
-    /*!
-        If __true__, transparency is enabled... this turns alpha on when the mesh is
-        rendered, and - if multipass transparency is enabled in the rendering camera -
-        uses the camera's multiple rendering passes to approximate back-to-front
-        sorting via culling.
-    */
-    bool m_useTransparency;
+		//! If __true__, the collision detector is displayed (if available) at this node.
+		bool m_showCollisionDetector;
 
-    /*!
-        Should culling be used when rendering triangles? \n
+		//! Should texture mapping be used?
+		bool m_useTextureMapping;
 
-        Note that this option only applies when multipass transparency is
-        disabled or during the non-transparent rendering pass when multipass
-        transparency is enabled... \n
+		//! Should material properties be used?
+		bool m_useMaterialProperty;
 
-        Also note that currently only back-faces are culled during non-transparent
-        rendering; you can't cull front-faces.
-    */
-    bool m_cullingEnabled;
+		//! Should per-vertex colors be used?
+		bool m_useVertexColors;
 
-    //! Default material property.
-    static cMaterialPtr s_defaultMaterial;
+		//! Should we use a display list to render this mesh?
+		bool m_useDisplayList;
 
-    //! Shader program.
-    cShaderProgramPtr m_shaderProgram;
+		//! Basic display list for current object.
+		cDisplayList m_displayList;
 
-    //! OpenGL matrix describing my position and orientation transformation.
-    cTransform m_frameGL;
+		//! The polygon rendering mode (GL_FILL or GL_LINE).
+		int m_triangleMode;
 
+		/*!
+			If __true__, transparency is enabled... this turns alpha on when the mesh is
+			rendered, and - if multipass transparency is enabled in the rendering camera -
+			uses the camera's multiple rendering passes to approximate back-to-front
+			sorting via culling.
+		*/
+		bool m_useTransparency;
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - COLLISION DETECTION:
-    //-----------------------------------------------------------------------
+		/*!
+			Should culling be used when rendering triangles? \n
 
-protected:
+			Note that this option only applies when multipass transparency is
+			disabled or during the non-transparent rendering pass when multipass
+			transparency is enabled... \n
 
-    //! The collision detector used to test for contact with this object.
-    cGenericCollision* m_collisionDetector;
+			Also note that currently only back-faces are culled during non-transparent
+			rendering; you can't cull front-faces.
+		*/
+		bool m_cullingEnabled;
 
+		//! Default material property.
+		static cMaterialPtr s_defaultMaterial;
 
-    //-----------------------------------------------------------------------
-    // PROTECTED MEMBERS - HAPTIC EFFECTS AND INTERACTIONS:
-    //-----------------------------------------------------------------------
+		//! Shader program.
+		cShaderProgramPtr m_shaderProgram;
 
-protected:
+		//! OpenGL matrix describing my position and orientation transformation.
+		cTransform m_frameGL;
 
-    //! List of haptic effects programmed for this object.
-    std::vector<cGenericEffect*> m_effects;
 
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - COLLISION DETECTION:
+		//-----------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------
-    // PROTECTED VIRTUAL METHODS:
-    //-----------------------------------------------------------------------
+	protected:
 
-protected:
+		//! The collision detector used to test for contact with this object.
+		cGenericCollision* m_collisionDetector;
 
-    //! This method renders this object graphically using OpenGL.
-    virtual void render(cRenderOptions& a_options);
 
-    //! This method update the global position information about this object.
-    virtual void updateGlobalPositions(const bool a_frameOnly) {};
+		//-----------------------------------------------------------------------
+		// PROTECTED MEMBERS - HAPTIC EFFECTS AND INTERACTIONS:
+		//-----------------------------------------------------------------------
 
-    //! This method updates the boundary box of this object.
-    virtual void updateBoundaryBox() {};
+	protected:
 
-    //! This method scales the size of this object with given scale factor.
-    virtual void scaleObject(const double& a_scaleFactor) { m_boundaryBoxMin.mul(a_scaleFactor); m_boundaryBoxMax.mul(a_scaleFactor);}
+		//! List of haptic effects programmed for this object.
+		std::vector<cGenericEffect*> m_effects;
 
-    //! This method updates the geometric relationship between the tool and the current object.
-    virtual void computeLocalInteraction(const cVector3d& a_toolPos,
-        const cVector3d& a_toolVel,
-        const unsigned int a_IDN);
 
-    //! This method computes any additional interactions between the object and the tools.
-    virtual cVector3d computeOtherInteractions(const cVector3d& a_toolPos,
-        const cVector3d& a_toolVel,
-        const unsigned int a_IDN,
-        cInteractionRecorder& a_interactions) { return cVector3d(0,0,0); }
+		//-----------------------------------------------------------------------
+		// PROTECTED VIRTUAL METHODS:
+		//-----------------------------------------------------------------------
 
-    //! This method computes any additional collisions other than the ones computed by the default collision detector.
-    virtual bool computeOtherCollisionDetection(cVector3d& a_segmentPointA,
-        cVector3d& a_segmentPointB,
-        cCollisionRecorder& a_recorder,
-        cCollisionSettings& a_settings) {return(false);}
+	protected:
 
+		//! This method renders this object graphically using OpenGL.
+		virtual void render(cRenderOptions& a_options);
 
-    //-----------------------------------------------------------------------
-    // PROTECTED METHODS:
-    //-----------------------------------------------------------------------
+		//! This method update the global position information about this object.
+		virtual void updateGlobalPositions(const bool a_frameOnly) {};
 
-protected:
+		//! This method updates the boundary box of this object.
+		virtual void updateBoundaryBox() {};
 
-    //! This method copies all properties of the current generic object to another.
-    void copyGenericObjectProperties(cGenericObject* a_objDest, 
-        const bool a_duplicateMaterialData,
-        const bool a_duplicateTextureData, 
-        const bool a_duplicateMeshData,
-        const bool a_buildCollisionDetector);
+		//! This method scales the size of this object with given scale factor.
+		virtual void scaleObject(const double& a_scaleFactor) { m_boundaryBoxMin.mul(a_scaleFactor); m_boundaryBoxMax.mul(a_scaleFactor); }
 
+		//! This method updates the geometric relationship between the tool and the current object.
+		virtual void computeLocalInteraction(const cVector3d& a_toolPos,
+			const cVector3d& a_toolVel,
+			const unsigned int a_IDN);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC MEMBERS - INTERACTIONS:
-    //-----------------------------------------------------------------------
+		//! This method computes any additional interactions between the object and the tools.
+		virtual cVector3d computeOtherInteractions(const cVector3d& a_toolPos,
+			const cVector3d& a_toolVel,
+			const unsigned int a_IDN,
+			cInteractionRecorder& a_interactions) {
+			return cVector3d(0, 0, 0);
+		}
 
-public: 
+		//! This method computes any additional collisions other than the ones computed by the default collision detector.
+		virtual bool computeOtherCollisionDetection(cVector3d& a_segmentPointA,
+			cVector3d& a_segmentPointB,
+			cCollisionRecorder& a_recorder,
+			cCollisionSettings& a_settings) {
+			return(false);
+		}
 
-    //! Projection of the most recent haptic point (tool) onto the surface of the virtual object.
-    cVector3d m_interactionPoint;
 
-    //! Surface normal at the current interaction point.
-    cVector3d m_interactionNormal;
+		//-----------------------------------------------------------------------
+		// PROTECTED METHODS:
+		//-----------------------------------------------------------------------
 
-    //! Was the last tool (haptic point) located inside the object?
-    bool m_interactionInside;
+	protected:
 
+		//! This method copies all properties of the current generic object to another.
+		void copyGenericObjectProperties(cGenericObject* a_objDest,
+			const bool a_duplicateMaterialData,
+			const bool a_duplicateTextureData,
+			const bool a_duplicateMeshData,
+			const bool a_buildCollisionDetector);
 
-    //-----------------------------------------------------------------------
-    // PUBLIC MEMBERS - GENERAL
-    //-----------------------------------------------------------------------
 
-public:
+		//-----------------------------------------------------------------------
+		// PUBLIC MEMBERS - INTERACTIONS:
+		//-----------------------------------------------------------------------
 
-    //! This method renders the entire scene graph, starting from this object.
-    virtual void renderSceneGraph(cRenderOptions& a_options);
+	public:
 
-    //! This method adjusts the collision segment to handle objects in motion.
-    virtual void adjustCollisionSegment(cVector3d& a_segmentPointA, cVector3d& a_segmentPointAadjusted);
+		//! Projection of the most recent haptic point (tool) onto the surface of the virtual object.
+		cVector3d m_interactionPoint;
 
-    //! This method computes all haptic interaction between a tool and this object using the haptic effects.
-    virtual cVector3d computeInteractions(const cVector3d& a_toolPos,
-        const cVector3d& a_toolVel,
-        const unsigned int a_IDN,
-        cInteractionRecorder& a_interactions);
-};
+		//! Surface normal at the current interaction point.
+		cVector3d m_interactionNormal;
 
-//------------------------------------------------------------------------------
+		//! Was the last tool (haptic point) located inside the object?
+		bool m_interactionInside;
+
+
+		//-----------------------------------------------------------------------
+		// PUBLIC MEMBERS - GENERAL
+		//-----------------------------------------------------------------------
+
+	public:
+
+		//! This method renders the entire scene graph, starting from this object.
+		virtual void renderSceneGraph(cRenderOptions& a_options);
+
+		//! This method adjusts the collision segment to handle objects in motion.
+		virtual void adjustCollisionSegment(cVector3d& a_segmentPointA, cVector3d& a_segmentPointAadjusted);
+
+		//! This method computes all haptic interaction between a tool and this object using the haptic effects.
+		virtual cVector3d computeInteractions(const cVector3d& a_toolPos,
+			const cVector3d& a_toolVel,
+			const unsigned int a_IDN,
+			cInteractionRecorder& a_interactions);
+	};
+
+	//------------------------------------------------------------------------------
 } // namespace chai3d
 //------------------------------------------------------------------------------
 

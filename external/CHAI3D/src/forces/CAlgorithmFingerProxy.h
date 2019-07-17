@@ -1,43 +1,43 @@
 //==============================================================================
 /*
-    Software License Agreement (BSD License)
-    Copyright (c) 2003-2016, CHAI3D.
-    (www.chai3d.org)
+Software License Agreement (BSD License)
+Copyright (c) 2003-2016, CHAI3D.
+(www.chai3d.org)
 
-    All rights reserved.
+All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
 
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+* Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
 
-    * Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following
-    disclaimer in the documentation and/or other materials provided
-    with the distribution.
+* Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided
+with the distribution.
 
-    * Neither the name of CHAI3D nor the names of its contributors may
-    be used to endorse or promote products derived from this software
-    without specific prior written permission.
+* Neither the name of CHAI3D nor the names of its contributors may
+be used to endorse or promote products derived from this software
+without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-    POSSIBILITY OF SUCH DAMAGE. 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
 
-    \author    <http://www.chai3d.org>
-    \author    Francois Conti
-    \version   3.2.0 $Rev: 1869 $
+\author    <http://www.chai3d.org>
+\author    Francois Conti
+\version   3.2.0 $Rev: 1869 $
 */
 //==============================================================================
 
@@ -49,303 +49,354 @@
 #include "forces/CGenericForceAlgorithm.h"
 #include "math/CVector3d.h"
 #include "math/CMatrix3d.h"
+#include <iostream>
+#include <fstream>
 //------------------------------------------------------------------------------
 #include <map>
 //------------------------------------------------------------------------------
-
 //------------------------------------------------------------------------------
+
 namespace chai3d {
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
+	enum class textureAlgo {
+		Normal, Lateral1, Lateral2	//
+	};
+	//------------------------------------------------------------------------------
+	class cWorld;
+	//------------------------------------------------------------------------------
+
+	//==============================================================================
+	/*!
+	\file       CAlgorithmFingerProxy.h
 
-//------------------------------------------------------------------------------
-class cWorld;
-//------------------------------------------------------------------------------
+	\brief
+	Implements a finger-proxy force rendering algorithm.
+	*/
+	//==============================================================================
 
-//==============================================================================
-/*!
-    \file       CAlgorithmFingerProxy.h
+	//==============================================================================
+	/*!
+	\class      cAlgorithmFingerProxy
+	\ingroup    forces
 
-    \brief
-    Implements a finger-proxy force rendering algorithm.
-*/
-//==============================================================================
+	\brief
+	This class implements a finger-proxy force rendering algorithm.
 
-//==============================================================================
-/*!
-    \class      cAlgorithmFingerProxy
-    \ingroup    forces
+	\details
+	This class implements a finger-proxy force rendering algorithm for polygonal
+	objects.
+	*/
+	//==============================================================================
+	class cAlgorithmFingerProxy : public cGenericForceAlgorithm
+	{
+		//--------------------------------------------------------------------------
+		// CONSTRUCTOR & DESTRUCTOR:
+		//--------------------------------------------------------------------------
 
-    \brief
-    This class implements a finger-proxy force rendering algorithm.
+	public:
 
-    \details
-    This class implements a finger-proxy force rendering algorithm for polygonal 
-    objects.
-*/
-//==============================================================================
-class cAlgorithmFingerProxy : public cGenericForceAlgorithm
-{
-    //--------------------------------------------------------------------------
-    // CONSTRUCTOR & DESTRUCTOR:
-    //--------------------------------------------------------------------------
+		//! Constructor of cAlgorithmFingerProxy.
+		cAlgorithmFingerProxy();
 
-public:
+		//! Destructor of cAlgorithmFingerProxy.
+		virtual ~cAlgorithmFingerProxy() {}
 
-    //! Constructor of cAlgorithmFingerProxy.
-    cAlgorithmFingerProxy();
 
-    //! Destructor of cAlgorithmFingerProxy.
-    virtual ~cAlgorithmFingerProxy() {}
+		//----------------------------------------------------------------------
+		// METHODS - BASIC PROXY:
+		//----------------------------------------------------------------------
 
+		//! This method initialize the algorithm.
+		void initialize(cWorld* a_world, const cVector3d& a_initialGlobalPosition);
 
-    //----------------------------------------------------------------------
-    // METHODS - BASIC PROXY:
-    //----------------------------------------------------------------------
+		//! This method reset the algorithm and sets the __proxy__ position to the __device__ position.
+		void reset();
 
-    //! This method initialize the algorithm.
-    void initialize(cWorld* a_world, const cVector3d& a_initialGlobalPosition);
+		//! This method calculates the interaction forces.
+		virtual cVector3d computeForces(const cVector3d& a_toolPos, const cVector3d& a_toolVel);
 
-    //! This method reset the algorithm and sets the __proxy__ position to the __device__ position.
-    void reset();
 
-    //! This method calculates the interaction forces.
-    virtual cVector3d computeForces(const cVector3d& a_toolPos, const cVector3d& a_toolVel);
+		//----------------------------------------------------------------------
+		// METHODS - GETTER AND SETTER FUNCTIONS:
+		//----------------------------------------------------------------------
 
+		//! This method sets the radius of the __proxy__.
+		void setProxyRadius(const double& a_radius) { m_radius = a_radius; m_collisionSettings.m_collisionRadius = m_radius; }
 
-    //----------------------------------------------------------------------
-    // METHODS - GETTER AND SETTER FUNCTIONS:
-    //----------------------------------------------------------------------
 
-    //! This method sets the radius of the __proxy__.
-    void setProxyRadius(const double& a_radius) { m_radius = a_radius; m_collisionSettings.m_collisionRadius = m_radius;}
+		// Set texture erndering algorithm
+		void setTextureAlgo(int a_method) {
+			switch (a_method)
+			{
+			case 0:
+				m_textureAlgo = textureAlgo::Normal;
+				break;
+			case 1:
+				m_textureAlgo = textureAlgo::Lateral1;
+				break;
+			case 2:
+				m_textureAlgo = textureAlgo::Lateral2;
+				break;
+			default:
+				m_textureAlgo = textureAlgo::Lateral2;
+				break;
+			}
+		}
 
-    //! This method returns the radius of the __proxy__.
-    inline double getProxyRadius() const { return (m_radius); }
+		//! This method returns the radius of the __proxy__.
+		inline double getProxyRadius() const { return (m_radius); }
 
-    //! This method returns the last computed position of the __proxy__ in world coordinates.
-    inline cVector3d getProxyGlobalPosition() const { return (m_proxyGlobalPos); }
+		//! This method returns the last computed position of the __proxy__ in world coordinates.
+		inline cVector3d getProxyGlobalPosition() const { return (m_proxyGlobalPos); }
 
-    //! This method sets the position of the __proxy__ in world coordinates.
-    inline void setProxyGlobalPosition(const cVector3d& a_position)  { m_proxyGlobalPos = a_position; }
+		//여기서 friction proxy position을 리턴한다. 
+		inline cVector3d getFrictionProxyPosition() const { return (m_FrictionProxyPos); }
 
-    //! This method returns the last specified position of the __device__ in world coordinates.
-    inline cVector3d getDeviceGlobalPosition() const { return (m_deviceGlobalPos); }
+		//! This method sets the position of the __proxy__ in world coordinates.
+		inline void setProxyGlobalPosition(const cVector3d& a_position) { m_proxyGlobalPos = a_position; }
 
-    //! This method returns the last computed force in world coordinates.
-    inline cVector3d getForce() { return (m_lastGlobalForce); }
+		//! This method returns the last specified position of the __device__ in world coordinates.
+		inline cVector3d getDeviceGlobalPosition() const { return (m_deviceGlobalPos); }
 
-    //! This method returns the most recently calculated __normal__ force.
-    inline cVector3d getNormalForce() { return (m_normalForce); }
+		//! This method returns the last computed force in world coordinates.
+		inline cVector3d getForce() { return (m_lastGlobalForce); }
 
-    //! This method returns the most recently calculated __tangential__ force.
-    inline cVector3d getTangentialForce() { return (m_tangentialForce); }
+		//! This method returns the most recently calculated __normal__ force.
+		inline cVector3d getNormalForce() { return (m_normalForce); }
 
+		//! This method returns the most recently calculated __tangential__ force.
+		inline cVector3d getTangentialForce() { return (m_tangentialForce); }
 
-    //----------------------------------------------------------------------
-    // METHODS - COLLISION INFORMATION BETWEEN PROXY AND WORLD
-    //----------------------------------------------------------------------
 
-public:
+		//----------------------------------------------------------------------
+		// METHODS - COLLISION INFORMATION BETWEEN PROXY AND WORLD
+		//----------------------------------------------------------------------
 
-    //! This method return the number of collision events (0, 1, 2 or 3):
-    int getNumCollisionEvents() { return (m_numCollisionEvents); }
+	public:
 
+		//! This method return the number of collision events (0, 1, 2 or 3):
+		int getNumCollisionEvents() { return (m_numCollisionEvents); }
 
-    //----------------------------------------------------------------------
-    // MEMMBERS - COLLISION INFORMATION BETWEEN PROXY AND WORLD
-    //----------------------------------------------------------------------
 
-public:
+		//----------------------------------------------------------------------
+		// MEMMBERS - COLLISION INFORMATION BETWEEN PROXY AND WORLD
+		//----------------------------------------------------------------------
 
-    //! Table of collision events (0-3). Call \ref getNumCollisionEvents() to see how many are actually valid.
-    cCollisionEvent* m_collisionEvents[3];
+	public:
 
+		//! Table of collision events (0-3). Call \ref getNumCollisionEvents() to see how many are actually valid.
+		cCollisionEvent* m_collisionEvents[3];
 
-    //----------------------------------------------------------------------
-    // MEMBERS - FORCE MODELS
-    //----------------------------------------------------------------------
 
-public:
+		//----------------------------------------------------------------------
+		// MEMBERS - FORCE MODELS
+		//----------------------------------------------------------------------
 
-    //! If __true__ the the dynamic proxy is enabled to handle moving objects.
-    bool m_useDynamicProxy;
+	public:
 
-    /*!
-        Dynamic friction hysteresis multiplier
-        In CHAI's proxy, the angle computed from the coefficient is multiplied
-        by this constant to avoid rapidly oscillating between slipping and sticking
-        without having to turn the dynamic friction level way down.
-    */
-    double m_frictionDynHysteresisMultiplier;
+		//! If __true__ the the dynamic proxy is enabled to handle moving objects.
+		bool m_useDynamicProxy;
 
-    //! Maximum force shading angle (radians) threshold between normals of triangle.
-    double m_forceShadingAngleThreshold;
+		/*!
+		Dynamic friction hysteresis multiplier
+		In CHAI's proxy, the angle computed from the coefficient is multiplied
+		by this constant to avoid rapidly oscillating between slipping and sticking
+		without having to turn the dynamic friction level way down.
+		*/
+		double m_frictionDynHysteresisMultiplier;
 
-    //! Collision settings.
-    cCollisionSettings m_collisionSettings;
+		//! Maximum force shading angle (radians) threshold between normals of triangle.
+		double m_forceShadingAngleThreshold;
 
+		//! Collision settings.
+		cCollisionSettings m_collisionSettings;
 
-    //----------------------------------------------------------------------
-    // METHODS - RESOLUTION / ERRORS
-    //----------------------------------------------------------------------
 
-public:
+		//----------------------------------------------------------------------
+		// METHODS - RESOLUTION / ERRORS
+		//----------------------------------------------------------------------
 
-    //! This method sets the epsilon tolerance error base value.
-    void setEpsilonBaseValue(double a_value);
+	public:
 
-    //! This method returns the current epsilon tolerance error base value.
-    double getEpsilonBaseValue() { return (m_epsilonBaseValue); }
+		//! This method sets the epsilon tolerance error base value.
+		void setEpsilonBaseValue(double a_value);
 
+		//! This method returns the current epsilon tolerance error base value.
+		double getEpsilonBaseValue() { return (m_epsilonBaseValue); }
 
-    //--------------------------------------------------------------------------
-    // PROTECTED METHODS - GRAPHICS:
-    //--------------------------------------------------------------------------
+		void setHCFlag(bool a_value);
 
-protected:
+		//--------------------------------------------------------------------------
+		// PROTECTED METHODS - GRAPHICS:
+		//--------------------------------------------------------------------------
 
-    //! This method renders the force algorithms graphically in OpenGL. (For debug purposes)
-    virtual void render(cRenderOptions& a_options);
+	protected:
 
+		//! This method renders the force algorithms graphically in OpenGL. (For debug purposes)
+		virtual void render(cRenderOptions& a_options);
 
-    //--------------------------------------------------------------------------
-    // PROTECTED METHODS - INTERNAL:
-    //--------------------------------------------------------------------------
 
-protected:
+		//--------------------------------------------------------------------------
+		// PROTECTED METHODS - INTERNAL:
+		//--------------------------------------------------------------------------
 
-    //! This method tests whether the proxy has reached the goal point.
-    virtual bool goalAchieved(const cVector3d& a_proxy, const cVector3d& a_goal) const;
+	protected:
 
-    //! This method computes the next goal position of the proxy.
-    virtual void computeNextBestProxyPosition(const cVector3d& a_goal);
+		//! This method tests whether the proxy has reached the goal point.
+		virtual bool goalAchieved(const cVector3d& a_proxy, const cVector3d& a_goal) const;
 
-    //! This method attempts to move the proxy, subject to friction constraints.
-    virtual void testFrictionAndMoveProxy(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent);
+		//! This method computes the next goal position of the proxy.
+		virtual void computeNextBestProxyPosition(const cVector3d& a_goal);
 
-    //! This method computes the resulting force which will be sent to the haptic device.
-    virtual void updateForce();
+		//! This method attempts to move the proxy, subject to friction constraints.
+		virtual void testFrictionAndMoveProxy(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent);
+		virtual void testFrictionAndMoveProxyDahl(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent);
 
 
-    //----------------------------------------------------------------------
-    // MEMBERS - PROXY, DEVICE AND FORCE INFORMATION:
-    //----------------------------------------------------------------------
+		//! This method computes the resulting force which will be sent to the haptic device.
+		virtual void updateForce();
 
-protected:
 
-    //! Global position of the proxy.
-    cVector3d m_proxyGlobalPos;
+		//----------------------------------------------------------------------
+		// MEMBERS - PROXY, DEVICE AND FORCE INFORMATION:
+		//----------------------------------------------------------------------
 
-    //! Global position of device.
-    cVector3d m_deviceGlobalPos;
+	protected:
 
-    //! Last computed force (in global coordinate frame).
-    cVector3d m_lastGlobalForce;
+		//! Global position of the proxy.
+		cVector3d m_proxyGlobalPos;
 
-    //! Next best position for the proxy (in global coordinate frame).
-    cVector3d m_nextBestProxyGlobalPos;
+		//! Global position of device.
+		cVector3d m_deviceGlobalPos;
 
-    //! If __true__ then we are currently in a "slip friction".
-    bool m_slipping;
+		//! Global velocity of device
+		cVector3d m_deviceGlobalVel;
 
-    //! Normal force.
-    cVector3d m_normalForce;
+		//! Last computed force (in global coordinate frame).
+		cVector3d m_lastGlobalForce;
 
-    //! Tangential force.
-    cVector3d m_tangentialForce;
+		//! Next best position for the proxy (in global coordinate frame).
+		cVector3d m_nextBestProxyGlobalPos;
 
-    //! Number of collision events between proxy and triangles (0, 1, 2 or 3).
-    unsigned int m_numCollisionEvents;
+		//Friction proxy for Dahl model
+		cVector3d m_FrictionProxyPos;
 
-    //! Radius of the proxy.
-    double m_radius;
+		cVector3d m_prevProxyPos;
 
+		//! If __true__ then we are currently in a "slip friction".
+		bool m_slipping;
 
-    //----------------------------------------------------------------------
-    // PROTECTED MEMBERS - PROXY ALGORITHM
-    //----------------------------------------------------------------------
+		//! Normal force.
+		cVector3d m_normalForce;
 
-protected:
+		//! Tangential force.
+		cVector3d m_tangentialForce;
 
-    //! Collision detection recorder for searching first constraint.
-    cCollisionRecorder m_collisionRecorderConstraint0;
+		//! Number of collision events between proxy and triangles (0, 1, 2 or 3).
+		unsigned int m_numCollisionEvents;
 
-    //! Collision detection recorder for searching second constraint.
-    cCollisionRecorder m_collisionRecorderConstraint1;
+		//! Radius of the proxy.
+		double m_radius;
 
-    //! Collision detection recorder for searching third constraint.
-    cCollisionRecorder m_collisionRecorderConstraint2;
+		//----------------------------------------------------------------------
+		// PROTECTED MEMBERS - PROXY ALGORITHM
+		//----------------------------------------------------------------------
 
-    //! Local position of contact point first object.
-    cVector3d m_contactPointLocalPos0;
+	protected:
 
-    //! Local position of contact point first object.
-    cVector3d m_contactPointLocalPos1;
+		//! Collision detection recorder for searching first constraint.
+		cCollisionRecorder m_collisionRecorderConstraint0;
 
-    //! Local position of contact point first object.
-    cVector3d m_contactPointLocalPos2;
+		//! Collision detection recorder for searching second constraint.
+		cCollisionRecorder m_collisionRecorderConstraint1;
 
-    /*!
-        To address numerical errors during geometric computation,
-        several epsilon values are computed and used.
-    */
+		//! Collision detection recorder for searching third constraint.
+		cCollisionRecorder m_collisionRecorderConstraint2;
 
-    //! Epsilon value - used for handling numerical limits.
-    double m_epsilonInitialValue;
+		//! Local position of contact point first object.
+		cVector3d m_contactPointLocalPos0;
 
-    //! Epsilon value - used for handling numerical limits.
-    double m_epsilon;
+		//! Local position of contact point first object.
+		cVector3d m_contactPointLocalPos1;
 
-    //! Epsilon value - used for handling numerical limits.
-    double m_epsilonCollisionDetection;
+		//! Local position of contact point first object.
+		cVector3d m_contactPointLocalPos2;
 
-    //! Epsilon value - used for handling numerical limits.
-    double m_epsilonBaseValue;
+		/*!
+		To address numerical errors during geometric computation,
+		several epsilon values are computed and used.
+		*/
 
-    //! Epsilon value - used for handling numerical limits.
-    double m_epsilonMinimalValue;
+		//! Epsilon value - used for handling numerical limits.
+		double m_epsilonInitialValue;
 
-    //! Value of state machine.
-    unsigned int m_algoCounter;
+		//! Epsilon value - used for handling numerical limits.
+		double m_epsilon;
 
+		//! Epsilon value - used for handling numerical limits.
+		double m_epsilonCollisionDetection;
 
-    //----------------------------------------------------------------------
-    // PROTECTED METHODS - PROXY ALGORITHM
-    //----------------------------------------------------------------------
+		//! Epsilon value - used for handling numerical limits.
+		double m_epsilonBaseValue;
 
-protected:
+		//! Epsilon value - used for handling numerical limits.
+		double m_epsilonMinimalValue;
 
-    //! This method ajust the position of __proxy__ by taking into account motion of objects in the world.
-    void adjustDynamicProxy(const cVector3d& a_goal);
+		//! Value of state machine.
+		unsigned int m_algoCounter;
 
-    //! This method updates the position of the __proxy__ - constraint 0.
-    bool computeNextProxyPositionWithContraints0(const cVector3d& a_goalGlobalPos);
+		//flag for HC stiffness model
+		bool m_flag_HC;
 
-    //! This method updates the position of the __proxy__ - constraint 1.
-    bool computeNextProxyPositionWithContraints1(const cVector3d& a_goalGlobalPos);
+		bool m_flag_Dahl;
 
-    //! This method updates the position of the __proxy__ - constraint 2.
-    bool computeNextProxyPositionWithContraints2(const cVector3d& a_goalGlobalPos);
+		textureAlgo m_textureAlgo;
 
-    //! This method computes the local surface normal from interpolated vertex normals 
-    cVector3d computeShadedSurfaceNormal(cCollisionEvent* a_contactPoint);
+		std::ofstream log_file;
 
+		//----------------------------------------------------------------------
+		// PROTECTED METHODS - PROXY ALGORITHM
+		//----------------------------------------------------------------------
 
-    //----------------------------------------------------------------------
-    // DEBUG PURPOSES
-    //----------------------------------------------------------------------
+	protected:
 
-protected:
+		//! This method ajust the position of __proxy__ by taking into account motion of objects in the world.
+		void adjustDynamicProxy(const cVector3d& a_goal);
 
-    //! Surface normal.
-    cVector3d surfaceNormal;
-};
+		//! This method updates the position of the __proxy__ - constraint 0.
+		bool computeNextProxyPositionWithContraints0(const cVector3d& a_goalGlobalPos);
 
-//------------------------------------------------------------------------------
+		//! This method updates the position of the __proxy__ - constraint 1.
+		bool computeNextProxyPositionWithContraints1(const cVector3d& a_goalGlobalPos);
+
+		//! This method updates the position of the __proxy__ - constraint 2.
+		bool computeNextProxyPositionWithContraints2(const cVector3d& a_goalGlobalPos);
+
+		//! This method computes the local surface normal from interpolated vertex normals 
+		cVector3d computeShadedSurfaceNormal(cCollisionEvent* a_contactPoint);
+
+		cVector3d applyTextureUsingTextureNormal(const cVector3d& a_force);
+		cVector3d applyTextureVaryingLateralForce1(const cVector3d& a_force);
+		cVector3d applyTextureVaryingLateralForce2(const cVector3d& a_force);
+		cVector3d calculateTextureNormal(const cVector3d& a_normal, double a_textureLevel);
+		double calculateNormalizedTextureHeight();
+
+
+		//----------------------------------------------------------------------
+		// DEBUG PURPOSES
+		//----------------------------------------------------------------------
+
+	protected:
+
+		//! Surface normal for graphic rendering (render function)
+		cVector3d surfaceNormal;
+	};
+
+	//------------------------------------------------------------------------------
 } // namespace chai3d
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 #endif
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 
