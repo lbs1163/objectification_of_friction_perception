@@ -326,23 +326,23 @@ public:
     //! This method returns the dynamic friction level.
     inline double getDynamicFriction() const { return (m_dynamicFriction); }
 
-	//! (DAHL) This method sets the dynamic friction level.
-	void setZmax(const double a_zmax);
+    //! (DAHL) This method sets the dynamic friction level.
+    void setZmax(const double a_zmax);
 
-	//! (DAHL) This method returns the dynamic friction level.
-	inline double getZmax() const { return (m_zMax); }
+    //! (DAHL) This method returns the dynamic friction level.
+    inline double getZmax() const { return (m_zMax); }
 
-	//! (DAHL) This method sets the dynamic friction level.
-	void setSigma(const double a_sigma);
+    //! (DAHL) This method sets the dynamic friction level.
+    void setSigma(const double a_sigma);
 
-	//! (DAHL) This method returns the dynamic friction level.
-	inline double getSigma() const { return (m_sigma); }
+    //! (DAHL) This method returns the dynamic friction level.
+    inline double getSigma() const { return (m_sigma); }
 
-	//! (DAHL) This method sets the dynamic friction level.
-	void setZstick(const double a_zstick);
+    //! (DAHL) This method sets the dynamic friction level.
+    void setZstick(const double a_zstick);
 
-	//! (DAHL) This method returns the dynamic friction level.
-	inline double getZstick() const { return (m_zStick); }
+    //! (DAHL) This method returns the dynamic friction level.
+    inline double getZstick() const { return (m_zStick); }
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -913,7 +913,7 @@ public:
     inline void setGrayGainsboro()          { m_diffuse.setb(0xDC, 0xDC, 0xDC); updateColors();}
 
     //! This method sets the color to Light Gray.
-    inline void setGrayLight() 	            { m_diffuse.setb(0xD3, 0xD3, 0xD3); updateColors();}
+    inline void setGrayLight()                 { m_diffuse.setb(0xD3, 0xD3, 0xD3); updateColors();}
 
     //! This method sets the color to Silver.
     inline void setGraySilver()             { m_diffuse.setb(0xC0, 0xC0, 0xC0); updateColors();}
@@ -1028,11 +1028,11 @@ protected:
     //! Flag to track if related member has been modified.
     bool m_flag_dynamicFriction;
 
-	//! (DAHL)
-	double m_zMax;
-	double m_sigma;
-	double m_zStick;
-	
+    //! (DAHL)
+    double m_zMax;
+    double m_sigma;
+    double m_zStick;
+    
 
     ////////////////////////////////////////////////////////////////////////////
     // TEXTURE
