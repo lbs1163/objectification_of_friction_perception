@@ -417,7 +417,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 
 	// create a mesh
-	cMesh* base = new cMesh();
+	base = new cMesh();
 
 	// add object to world
 	world->addChild(base);
@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 
 	// create a mesh
-	cMesh* teaPot = new cMesh();
+	teaPot = new cMesh();
 
 	// add object to world
 	base->addChild(teaPot);
@@ -483,7 +483,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 
 	// create a mesh
-	cMesh*  cylinder = new cMesh();
+	cylinder = new cMesh();
 
 	// add object to world
 	base->addChild(cylinder);
@@ -515,7 +515,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 
 	// create a mesh
-	cMesh* cone = new cMesh();
+	cone = new cMesh();
 
 	// add object to world
 	base->addChild(cone);
