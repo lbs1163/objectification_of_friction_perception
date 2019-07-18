@@ -576,7 +576,6 @@
     <ClCompile Include="src/world/CShapeTorus.cpp" />
     <ClCompile Include="src/world/CVoxelObject.cpp" />
     <ClCompile Include="src/world/CWorld.cpp" />
-    <ClCompile Include="src\materials\CHeightMap.cpp" />
     <ClCompile Include="src\world\CShapeEllipsoid.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -715,7 +714,6 @@
     <ClInclude Include="src/world/CShapeTorus.h" />
     <ClInclude Include="src/world/CVoxelObject.h" />
     <ClInclude Include="src/world/CWorld.h" />
-    <ClInclude Include="src\materials\CHeightMap.h" />
     <ClInclude Include="src\math\CBezier.h" />
     <ClInclude Include="src\math\CMarchingCubes.h" />
     <ClInclude Include="src\resources\CShaderFong.h" />
