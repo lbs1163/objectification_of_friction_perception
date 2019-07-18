@@ -108,11 +108,31 @@ cFontPtr font;
 // a label to display the rate [Hz] at which the simulation is running
 cLabel* labelRates;
 
+// a widget panel
+cPanel* panel;
+
+// some labels
+cLabel* labelZStick;
+cLabel* labelZStickValue;
+cLabel* labelZStickDecrease;
+cLabel* labelZStickIncrease;
+cLabel* labelZMax;
+cLabel* labelZMaxValue;
+cLabel* labelZMaxDecrease;
+cLabel* labelZMaxIncrease;
+cLabel* labelSigma;
+cLabel* labelSigmaValue;
+cLabel* labelSigmaDecrease;
+cLabel* labelSigmaIncrease;
+
+
 // a flag that indicates if the haptic simulation is currently running
 bool simulationRunning = false;
 
 // a flag that indicates if the haptic simulation has terminated
 bool simulationFinished = true;
+
+double mouseX, mouseY;
 
 // a frequency counter to measure the simulation graphic rate
 cFrequencyCounter freqCounterGraphics;
@@ -151,6 +171,9 @@ void errorCallback(int error, const char* a_description);
 
 // callback when a key is pressed
 void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods);
+
+// callback to handle mouse click
+void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods);
 
 // this function renders the scene
 void updateGraphics(void);
@@ -248,6 +271,9 @@ int main(int argc, char* argv[])
 
 	// set resize callback
 	glfwSetWindowSizeCallback(window, windowSizeCallback);
+
+	// set mouse button callback
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	// set current display context
 	glfwMakeContextCurrent(window);
@@ -618,6 +644,110 @@ int main(int argc, char* argv[])
 		cColorf(0.8f, 0.8f, 0.8f),
 		cColorf(0.8f, 0.8f, 0.8f));
 
+	// a widget panel
+	panel = new cPanel();
+	camera->m_frontLayer->addChild(panel);
+	panel->setSize(300, 50);
+	panel->m_material->setGrayDim();
+	panel->setTransparencyLevel(0.8);
+
+
+	// create some labels
+
+	std::ostringstream stream;
+	string zStickValueString;
+	string zMaxValueString;
+	string sigmaValueString;
+
+	stream << std::fixed;
+	stream.precision(1);
+
+	stream << teaPot->m_material->getZstick();
+	zStickValueString = stream.str();
+	stream.str(string());
+
+	stream << teaPot->m_material->getZmax();
+	zMaxValueString = stream.str();
+	stream.str(string());
+
+	stream << teaPot->m_material->getSigma();
+	sigmaValueString = stream.str();
+	stream.str(string());
+	
+	labelZStick = new cLabel(font);
+	panel->addChild(labelZStick);
+	labelZStick->setText("z_stick");
+	labelZStick->setLocalPos(27, 30, 0.1);
+	labelZStick->m_fontColor.setWhite();
+
+	labelZStickValue = new cLabel(font);
+	panel->addChild(labelZStickValue);
+	labelZStickValue->setText(zStickValueString);
+	labelZStickValue->setLocalPos(42, 10, 0.1);
+	labelZStickValue->m_fontColor.setWhite();
+
+	labelZStickDecrease = new cLabel(font);
+	panel->addChild(labelZStickDecrease);
+	labelZStickDecrease->setText("<");
+	labelZStickDecrease->setLocalPos(10, 10, 0.1);
+	labelZStickDecrease->m_fontColor.setWhite();
+
+	labelZStickIncrease = new cLabel(font);
+	panel->addChild(labelZStickIncrease);
+	labelZStickIncrease->setText(">");
+	labelZStickIncrease->setLocalPos(80, 10, 0.1);
+	labelZStickIncrease->m_fontColor.setWhite();
+
+
+	labelZMax = new cLabel(font);
+	panel->addChild(labelZMax);
+	labelZMax->setText("z_max");
+	labelZMax->setLocalPos(127, 30, 0.1);
+	labelZMax->m_fontColor.setWhite();
+
+	labelZMaxValue = new cLabel(font);
+	panel->addChild(labelZMaxValue);
+	labelZMaxValue->setText(zMaxValueString);
+	labelZMaxValue->setLocalPos(135, 10, 0.1);
+	labelZMaxValue->m_fontColor.setWhite();
+
+	labelZMaxDecrease = new cLabel(font);
+	panel->addChild(labelZMaxDecrease);
+	labelZMaxDecrease->setText("<");
+	labelZMaxDecrease->setLocalPos(110, 10, 0.1);
+	labelZMaxDecrease->m_fontColor.setWhite();
+
+	labelZMaxIncrease = new cLabel(font);
+	panel->addChild(labelZMaxIncrease);
+	labelZMaxIncrease->setText(">");
+	labelZMaxIncrease->setLocalPos(180, 10, 0.1);
+	labelZMaxIncrease->m_fontColor.setWhite();
+
+
+	labelSigma = new cLabel(font);
+	panel->addChild(labelSigma);
+	labelSigma->setText("sigma");
+	labelSigma->setLocalPos(227, 30, 0.1);
+	labelSigma->m_fontColor.setWhite();
+
+	labelSigmaValue = new cLabel(font);
+	panel->addChild(labelSigmaValue);
+	labelSigmaValue->setText(sigmaValueString);
+	labelSigmaValue->setLocalPos(235, 10, 0.1);
+	labelSigmaValue->m_fontColor.setWhite();
+
+	labelSigmaDecrease = new cLabel(font);
+	panel->addChild(labelSigmaDecrease);
+	labelSigmaDecrease->setText("<");
+	labelSigmaDecrease->setLocalPos(210, 10, 0.1);
+	labelSigmaDecrease->m_fontColor.setWhite();
+
+	labelSigmaIncrease = new cLabel(font);
+	panel->addChild(labelSigmaIncrease);
+	labelSigmaIncrease->setText(">");
+	labelSigmaIncrease->setLocalPos(280, 10, 0.1);
+	labelSigmaIncrease->m_fontColor.setWhite();
+
 
 	//--------------------------------------------------------------------------
 	// START SIMULATION
@@ -674,6 +804,8 @@ void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
 	// update window size
 	width = a_width;
 	height = a_height;
+
+	panel->setLocalPos(10, (height - panel->getHeight()) - 10);
 }
 
 //------------------------------------------------------------------------------
@@ -743,6 +875,92 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		mirroredDisplay = !mirroredDisplay;
 		camera->setMirrorVertical(mirroredDisplay);
 	}
+}
+
+void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
+{
+	if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
+	{
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		cCollisionRecorder recorder;
+		cCollisionSettings settings;
+
+		std::ostringstream stream;
+		stream << std::fixed;
+		stream.precision(1);		
+
+		bool hit = camera->selectFrontLayer(mouseX, (height - mouseY), width, height, recorder, settings);
+		if (hit)
+		{
+			if (recorder.m_nearestCollision.m_object == labelZStickDecrease)
+			{
+				double zStick = teaPot->m_material->getZstick();
+				if (zStick < 1.001f)
+					return;
+				zStick = zStick - 1;
+				stream << zStick;
+				labelZStickValue->setText(stream.str());
+
+				teaPot->m_material->setZstick(zStick);
+			}
+			if (recorder.m_nearestCollision.m_object == labelZStickIncrease)
+			{
+				double zStick = teaPot->m_material->getZstick();
+				zStick = zStick + 1;
+				stream << zStick;
+				labelZStickValue->setText(stream.str());
+
+				teaPot->m_material->setZstick(zStick);
+
+			}
+
+			if (recorder.m_nearestCollision.m_object == labelZMaxDecrease)
+			{
+				double zMax = teaPot->m_material->getZmax();
+				if (zMax < 1.001f)
+					return;
+				zMax = zMax - 1;
+				stream << zMax;
+				labelZMaxValue->setText(stream.str());
+
+				teaPot->m_material->setZmax(zMax);
+			}
+			if (recorder.m_nearestCollision.m_object == labelZMaxIncrease)
+			{
+				double zMax = teaPot->m_material->getZmax();
+				zMax = zMax + 1;
+				stream << zMax;
+				labelZMaxValue->setText(stream.str());
+
+				teaPot->m_material->setZmax(zMax);
+			}
+
+			if (recorder.m_nearestCollision.m_object == labelSigmaDecrease)
+			{
+				double sigma = teaPot->m_material->getSigma();
+				if (sigma < 1.001f)
+					return;
+				sigma = sigma - 1;
+				stream << sigma;
+				labelSigmaValue->setText(stream.str());
+
+				teaPot->m_material->setSigma(sigma);
+			}
+			if (recorder.m_nearestCollision.m_object == labelSigmaIncrease)
+			{
+				double sigma = teaPot->m_material->getSigma();
+				sigma = sigma + 1;
+				stream << sigma;
+				labelSigmaValue->setText(stream.str());
+
+				teaPot->m_material->setSigma(sigma);
+
+			}
+		}
+	}
+
+
 }
 
 //------------------------------------------------------------------------------
