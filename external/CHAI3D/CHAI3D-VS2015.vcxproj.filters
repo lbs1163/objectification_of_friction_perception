@@ -1017,9 +1017,6 @@
     <ClCompile Include="src\world\CShapeEllipsoid.cpp">
       <Filter>world</Filter>
     </ClCompile>
-    <ClCompile Include="src\materials\CHeightMap.cpp">
-      <Filter>materials</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/collisions/CCollisionAABB.h">
@@ -1436,9 +1433,6 @@
     </ClInclude>
     <ClInclude Include="src\resources\CShaderFong.h">
       <Filter>resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\materials\CHeightMap.h">
-      <Filter>materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
