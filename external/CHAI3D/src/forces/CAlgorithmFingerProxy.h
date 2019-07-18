@@ -125,6 +125,9 @@ public:
     //! This method returns the last computed position of the __proxy__ in world coordinates.
     inline cVector3d getProxyGlobalPosition() const { return (m_proxyGlobalPos); }
 
+	//! (DAHL) This method returns the last computed position of the friction proxy in world coordinates.
+	inline cVector3d getFrictionProxyPosition() const { return (m_frictionProxyPos); }
+
     //! This method sets the position of the __proxy__ in world coordinates.
     inline void setProxyGlobalPosition(const cVector3d& a_position)  { m_proxyGlobalPos = a_position; }
 
@@ -223,6 +226,9 @@ protected:
     //! This method attempts to move the proxy, subject to friction constraints.
     virtual void testFrictionAndMoveProxy(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent);
 
+	//! (DAHL) This method attempts to move the proxy, subject to friction constraints with Dahl's model.
+	virtual void testFrictionAndMoveProxyDahl(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent);
+
     //! This method computes the resulting force which will be sent to the haptic device.
     virtual void updateForce();
 
@@ -244,6 +250,10 @@ protected:
 
     //! Next best position for the proxy (in global coordinate frame).
     cVector3d m_nextBestProxyGlobalPos;
+
+	//! (DAHL) Friction proxy position
+	cVector3d m_frictionProxyPos;
+	cVector3d m_prevProxyPos;
 
     //! If __true__ then we are currently in a "slip friction".
     bool m_slipping;
@@ -307,6 +317,9 @@ protected:
 
     //! Value of state machine.
     unsigned int m_algoCounter;
+
+	//! (DAHL) flag for Dahl's model
+	bool m_flag_Dahl;
 
 
     //----------------------------------------------------------------------

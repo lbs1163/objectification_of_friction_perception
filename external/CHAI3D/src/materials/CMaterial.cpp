@@ -88,6 +88,11 @@ cMaterial::cMaterial()
     m_audioFrictionPitchGain        = 0.0;
     m_audioFrictionPitchOffset      = 1.0;
 
+	// (DAHL)
+	m_zMax		= 0.0;
+	m_sigma		= 0.0;
+	m_zStick	= 0.0;
+
     // set all modification flags to false
     setModificationFlags(false);
 }
@@ -136,6 +141,11 @@ cMaterialPtr cMaterial::copy()
     obj->m_audioFrictionGain            = m_audioFrictionGain;
     obj->m_audioFrictionPitchGain       = m_audioFrictionPitchGain;
     obj->m_audioFrictionPitchOffset     = m_audioFrictionPitchOffset;
+
+	// (DAHL)
+	obj->m_zMax = m_zMax;
+	obj->m_sigma = m_sigma;
+	obj->m_zStick = m_zStick;
 
     // reset all flags
     obj->setModificationFlags(false);
@@ -340,6 +350,28 @@ void cMaterial::setDynamicFriction(const double a_friction)
     
     // mark variable as modified
     m_flag_dynamicFriction = true;
+}
+
+
+// (DAHL)
+void cMaterial::setZmax(const double a_zmax)
+{
+	// update value
+	m_zMax = cClamp0(a_zmax);
+}
+
+// (DAHL)
+void cMaterial::setSigma(const double a_sigma)
+{
+	// update value
+	m_sigma = cClamp0(a_sigma);
+}
+
+// (DAHL)
+void cMaterial::setZstick(const double a_zstick)
+{
+	// update value
+	m_zStick = cClamp0(a_zstick);
 }
 
 

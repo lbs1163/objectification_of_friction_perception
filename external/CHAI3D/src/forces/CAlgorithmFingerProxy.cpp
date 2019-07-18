@@ -114,6 +114,9 @@ cAlgorithmFingerProxy::cAlgorithmFingerProxy()
 
     // render settings (for debug purposes)
     m_showEnabled = true;
+
+	// (DAHL) flag variable for Dahl's friction model
+	m_flag_Dahl = true;
 }
 
 
@@ -247,6 +250,12 @@ cVector3d cAlgorithmFingerProxy::computeForces(const cVector3d& a_toolPos,
 //==============================================================================
 void cAlgorithmFingerProxy::computeNextBestProxyPosition(const cVector3d& a_goal)
 {
+	// (DAHL) if the goal is achieved, change the friction proxy position and previous friction proxy position
+	if (goalAchieved(a_goal, m_proxyGlobalPos)) {
+		m_frictionProxyPos = m_proxyGlobalPos;
+		m_prevProxyPos = m_proxyGlobalPos;
+	}
+
     bool hit0, hit1, hit2;
 
     if (m_useDynamicProxy)
@@ -677,10 +686,22 @@ bool cAlgorithmFingerProxy::computeNextProxyPositionWithContraints1(const cVecto
     // friction prevents us from doing so.
     if (!hit)
     {
-        testFrictionAndMoveProxy(goalGlobalPos,
-                                 m_proxyGlobalPos,
-                                 m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
-                                 m_collisionRecorderConstraint0.m_nearestCollision.m_object);
+		if (m_flag_Dahl)
+		{
+			testFrictionAndMoveProxyDahl(goalGlobalPos,
+										 m_proxyGlobalPos,
+										 m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
+										 m_collisionRecorderConstraint0.m_nearestCollision.m_object);
+			m_nextBestProxyGlobalPos = goalGlobalPos;
+		}
+		else
+		{
+			testFrictionAndMoveProxy(goalGlobalPos,
+									 m_proxyGlobalPos,
+									 m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
+									 m_collisionRecorderConstraint0.m_nearestCollision.m_object);
+			m_frictionProxyPos = m_proxyGlobalPos;
+		}
 
         m_numCollisionEvents = 1;
         m_algoCounter = 0;
@@ -848,10 +869,23 @@ bool cAlgorithmFingerProxy::computeNextProxyPositionWithContraints2(const cVecto
         cVector3d normal = cMul(0.5,cAdd(m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
                                          m_collisionRecorderConstraint1.m_nearestCollision.m_globalNormal));
 
-        testFrictionAndMoveProxy(goalGlobalPos,
-                                 m_proxyGlobalPos,
-                                 normal,
-                                 m_collisionRecorderConstraint1.m_nearestCollision.m_object);
+		if (m_flag_Dahl)
+		{
+			testFrictionAndMoveProxyDahl(goalGlobalPos,
+										 m_proxyGlobalPos,
+										 m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
+										 m_collisionRecorderConstraint0.m_nearestCollision.m_object);
+			m_nextBestProxyGlobalPos = goalGlobalPos;
+		}
+		else
+		{
+			testFrictionAndMoveProxy(goalGlobalPos,
+									 m_proxyGlobalPos,
+									 m_collisionRecorderConstraint0.m_nearestCollision.m_globalNormal,
+									 m_collisionRecorderConstraint0.m_nearestCollision.m_object);
+			m_frictionProxyPos = m_proxyGlobalPos;
+		}
+
         m_numCollisionEvents = 2;
         m_algoCounter = 0;
 
@@ -1062,6 +1096,44 @@ void cAlgorithmFingerProxy::testFrictionAndMoveProxy(const cVector3d& a_goal,
 }
 
 
+// (DAHL) Another friction methods: implements Dahl model
+void cAlgorithmFingerProxy::testFrictionAndMoveProxyDahl(const cVector3d& a_goal, const cVector3d& a_proxy, cVector3d& a_normal, cGenericObject* a_parent)
+{
+	//Zk:slip vector
+	cVector3d Zvector;
+	a_goal.subr(m_frictionProxyPos, Zvector); //Zvector는 그 차이를 핸들하게 된다.
+
+	double ZvectorLength = Zvector.length();//Z vector의 길이를 저장한다.
+	double zmax = a_parent->m_material->getZmax();
+	double zstick = a_parent->m_material->getZstick();
+	double alpha = (1 / zmax)*pow(ZvectorLength, 8) / (pow(zstick, 8) + pow(ZvectorLength, 8));
+
+	if (alpha * ZvectorLength > 1)
+	{
+		cVector3d temp = Zvector * (zmax / ZvectorLength);
+		a_goal.subr(temp, m_frictionProxyPos);
+	}
+	else
+	{
+		double Yk;
+		if (cDistance(m_frictionProxyPos, m_proxyGlobalPos) == 0) {
+			Yk = 0;
+
+		}
+		else {
+			Yk = cDistance(a_goal, m_prevProxyPos);
+
+		}
+		cVector3d temp;
+		Zvector.mulr(Yk *alpha, temp);
+		m_frictionProxyPos.add(temp);
+	}
+
+	// we're done; record the fact that we're still touching an object...
+	return;
+}
+
+
 //==============================================================================
 /*!
     This method uses the contact to determine the force to apply to the device.
@@ -1073,7 +1145,7 @@ void cAlgorithmFingerProxy::testFrictionAndMoveProxy(const cVector3d& a_goal,
 void cAlgorithmFingerProxy::updateForce()
 {
     // initialize variables
-    double stiffness;
+    double stiffness, sigma, z_max;
     cVector3d averagedSurfaceNormal;
 
     //---------------------------------------------------------------------
@@ -1098,11 +1170,19 @@ void cAlgorithmFingerProxy::updateForce()
     averagedSurfaceNormal.zero();
     stiffness = 0.0;
 
+	// (DAHL)
+	sigma = 0.0;
+	z_max = 0.0;
+
     // compute the average surface normal and stiffness
     for (unsigned int i=0; i<m_numCollisionEvents; i++)
     {
         // compute stiffness
         stiffness += ( m_collisionEvents[i]->m_object->m_material->getStiffness() );
+
+		// (DAHL)
+		sigma     += ( m_collisionEvents[i]->m_object->m_material->getSigma() );
+		z_max     += ( m_collisionEvents[i]->m_object->m_material->getZmax() );
 
         // compute surface normal
         averagedSurfaceNormal.add(m_collisionEvents[i]->m_globalNormal);
@@ -1112,6 +1192,11 @@ void cAlgorithmFingerProxy::updateForce()
     {
         double scale = 1.0/(double)m_numCollisionEvents;
         stiffness *= scale;
+
+		// (DAHL)
+		sigma     *= scale;
+		z_max     *= scale;
+
         averagedSurfaceNormal.mul(scale);
     }
 
@@ -1132,6 +1217,18 @@ void cAlgorithmFingerProxy::updateForce()
         m_lastGlobalForce.zero();
         return;
     }
+
+	// (DAHL) calculate frictional force
+	cVector3d frictionForce;
+	frictionForce.zero();
+
+	// (DAHL) if there is friction, add frictional force
+	if (cDistance(m_proxyGlobalPos, m_frictionProxyPos) > C_SMALL)
+	{
+		m_frictionProxyPos.subr(m_proxyGlobalPos, frictionForce);
+		frictionForce.mul(sigma * force.length());
+	}
+	force.add(frictionForce);
 
 
     //---------------------------------------------------------------------
