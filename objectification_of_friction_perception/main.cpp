@@ -379,8 +379,8 @@ int main(int argc, char* argv[])
 	// define a radius for the tool
 	tool->setRadius(toolRadius);
 
-	// hide the device sphere. only show proxy.
-	tool->setShowContactPoints(true, false);
+    // show proxy and device position of finger-proxy algorithm
+    tool->setShowContactPoints(true, true, cColorf(0.0, 0.0, 0.0));
 
 	// enable if objects in the scene are going to rotate of translate
 	// or possibly collide against the tool. If the environment
@@ -434,6 +434,9 @@ int main(int argc, char* argv[])
 	// set material properties
 	base->m_material->setGrayGainsboro();
 	base->m_material->setStiffness(0.5 * maxStiffness);
+    base->m_material->setSigma(336.079);
+    base->m_material->setZmax(0.00172863);
+    base->m_material->setZstick(0.00194268);
 
 	// build collision detection tree
 	base->createAABBCollisionDetector(toolRadius);
@@ -723,7 +726,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 
 		std::ostringstream stream;
 		stream << std::fixed;
-		stream.precision(1);		
+		stream.precision(3);		
 
 		bool hit = camera->selectFrontLayer(mouseX, (height - mouseY), width, height, recorder, settings);
 		if (hit)
@@ -731,7 +734,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZStickDecrease)
 			{
 				double zStick = base->m_material->getZstick();
-				zStick = zStick - 1;
+				zStick = zStick - 0.001;
 
 				base->m_material->setZstick(zStick);
 				zStick = base->m_material->getZstick();
@@ -741,7 +744,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZStickIncrease)
 			{
 				double zStick = base->m_material->getZstick();
-				zStick = zStick + 1;
+				zStick = zStick + 0.001;
 				stream << zStick;
 				labelZStickValue->setText(stream.str());
 
@@ -752,7 +755,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZMaxDecrease)
 			{
 				double zMax = base->m_material->getZmax();
-				zMax = zMax - 1;
+				zMax = zMax - 0.001;
 				
 				base->m_material->setZmax(zMax);
 				zMax = base->m_material->getZmax();
@@ -762,7 +765,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZMaxIncrease)
 			{
 				double zMax = base->m_material->getZmax();
-				zMax = zMax + 1;
+				zMax = zMax + 0.001;
 				stream << zMax;
 				labelZMaxValue->setText(stream.str());
 
