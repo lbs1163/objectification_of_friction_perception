@@ -896,13 +896,12 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZStickDecrease)
 			{
 				double zStick = teaPot->m_material->getZstick();
-				if (zStick < 1.001f)
-					return;
 				zStick = zStick - 1;
-				stream << zStick;
-				labelZStickValue->setText(stream.str());
 
 				teaPot->m_material->setZstick(zStick);
+				zStick = teaPot->m_material->getZstick();
+				stream << zStick;
+				labelZStickValue->setText(stream.str());
 			}
 			if (recorder.m_nearestCollision.m_object == labelZStickIncrease)
 			{
@@ -918,13 +917,12 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelZMaxDecrease)
 			{
 				double zMax = teaPot->m_material->getZmax();
-				if (zMax < 1.001f)
-					return;
 				zMax = zMax - 1;
+				
+				teaPot->m_material->setZmax(zMax);
+				zMax = teaPot->m_material->getZmax();
 				stream << zMax;
 				labelZMaxValue->setText(stream.str());
-
-				teaPot->m_material->setZmax(zMax);
 			}
 			if (recorder.m_nearestCollision.m_object == labelZMaxIncrease)
 			{
@@ -939,13 +937,12 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 			if (recorder.m_nearestCollision.m_object == labelSigmaDecrease)
 			{
 				double sigma = teaPot->m_material->getSigma();
-				if (sigma < 1.001f)
-					return;
 				sigma = sigma - 1;
-				stream << sigma;
-				labelSigmaValue->setText(stream.str());
 
 				teaPot->m_material->setSigma(sigma);
+				sigma = teaPot->m_material->getSigma();
+				stream << sigma;
+				labelSigmaValue->setText(stream.str());
 			}
 			if (recorder.m_nearestCollision.m_object == labelSigmaIncrease)
 			{
