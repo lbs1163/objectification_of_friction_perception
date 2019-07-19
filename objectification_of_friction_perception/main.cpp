@@ -94,10 +94,6 @@ cToolCursor* tool;
 
 // a few objects that are placed in the scene
 cMesh* base;
-cMesh* teaPot;
-cMesh* cylinder;
-cMesh* cone;
-cMultiSegment* segments;
 
 // a colored background
 cBackground* background;
@@ -446,164 +442,6 @@ int main(int argc, char* argv[])
 	base->setUseDisplayList(true);
 
 
-	/////////////////////////////////////////////////////////////////////////
-	// TEA POT
-	/////////////////////////////////////////////////////////////////////////
-
-	// create a mesh
-	teaPot = new cMesh();
-
-	// add object to world
-	base->addChild(teaPot);
-
-	// build mesh using a cylinder primitive
-	cCreateTeaPot(teaPot,
-		0.5,
-		4,
-		cVector3d(0.0, 0.0, 0.0),
-		cMatrix3d(cDegToRad(0), cDegToRad(0), cDegToRad(-90), C_EULER_ORDER_XYZ)
-	);
-
-	// position object
-	teaPot->setLocalPos(0.1, 0.2, 0.0);
-
-	// set material properties
-	teaPot->m_material->setRedDark();
-	teaPot->m_material->setStiffness(0.5 * maxStiffness);
-
-	// build collision detection tree
-	teaPot->createAABBCollisionDetector(toolRadius);
-
-	// use display list to optimize graphic rendering performance
-	teaPot->setUseDisplayList(true);
-
-
-	/////////////////////////////////////////////////////////////////////////
-	// CYLINDER
-	/////////////////////////////////////////////////////////////////////////
-
-	// create a mesh
-	cylinder = new cMesh();
-
-	// add object to world
-	base->addChild(cylinder);
-
-	// build mesh using a cylinder primitive
-	cCreatePipe(cylinder,
-		0.15,
-		0.05,
-		0.06,
-		32,
-		1,
-		cVector3d(-0.05, -0.20, 0.0),
-		cMatrix3d(cDegToRad(0), cDegToRad(0), cDegToRad(170), C_EULER_ORDER_XYZ)
-	);
-
-	// set material properties
-	cylinder->m_material->setBlueCornflower();
-	cylinder->m_material->setStiffness(0.5 * maxStiffness);
-
-	// build collision detection tree
-	cylinder->createAABBCollisionDetector(toolRadius);
-
-	// use display list to optimize graphic rendering performance
-	cylinder->setUseDisplayList(true);
-
-
-	/////////////////////////////////////////////////////////////////////////
-	// CONE
-	/////////////////////////////////////////////////////////////////////////
-
-	// create a mesh
-	cone = new cMesh();
-
-	// add object to world
-	base->addChild(cone);
-
-	// build mesh using a cylinder primitive
-	cCreateCone(cone,
-		0.15,
-		0.05,
-		0.01,
-		32,
-		1,
-		1,
-		true,
-		true,
-		cVector3d(0.30, 0.0, 0.0),
-		cMatrix3d(cDegToRad(0), cDegToRad(0), cDegToRad(0), C_EULER_ORDER_XYZ)
-	);
-
-	// set material properties
-	cone->m_material->setGreenForest();
-	cone->m_material->setStiffness(0.5 * maxStiffness);
-
-	// build collision detection tree
-	cone->createAABBCollisionDetector(toolRadius);
-
-	// use display list to optimize graphic rendering performance
-	cone->setUseDisplayList(true);
-
-
-	/////////////////////////////////////////////////////////////////////////
-	// SEGMENTS
-	/////////////////////////////////////////////////////////////////////////
-
-	// create a line segment object
-	cMultiSegment* segments = new cMultiSegment();
-
-	// add object to world
-	base->addChild(segments);
-
-	// build some segment
-	double l = 0.0;
-	double dl = 0.001;
-	double a = 0.0;
-	double da = 0.2;
-	double r = 0.05;
-	for (int i = 0; i < 200; i++)
-	{
-		double px0 = r * cos(a);
-		double py0 = r * sin(a);
-		double pz0 = l;
-
-		double px1 = r * cos(a + da);
-		double py1 = r * sin(a + da);
-		double pz1 = l + dl;
-
-		// create vertex 0
-		int index0 = segments->newVertex(px0, py0, pz0);
-
-		// create vertex 1
-		int index1 = segments->newVertex(px1, py1, pz1);
-
-		// create segment
-		segments->newSegment(index0, index1);
-
-		l = l + dl;
-		a = a + da;
-	}
-
-	// set haptic properties
-	segments->m_material->setStiffness(0.5 * maxStiffness);
-
-	// position object
-	segments->setLocalPos(0.22, -0.22, 0.0);
-
-	// set segment properties
-	cColorf color;
-	color.setYellowGold();
-	segments->setLineColor(color);
-	segments->setLineWidth(4.0);
-	segments->setUseDisplayList(true);
-
-	// build collision detection tree
-	segments->createAABBCollisionDetector(toolRadius);
-
-	// use display list to optimize graphic rendering performance
-	segments->setUseDisplayList(true);
-
-
 	//--------------------------------------------------------------------------
 	// CREATE SHADERS
 	//--------------------------------------------------------------------------
@@ -617,9 +455,6 @@ int main(int argc, char* argv[])
 	// assign shader to mesh objects in the world
 	tool->setShaderProgram(shaderProgram);
 	base->setShaderProgram(shaderProgram);
-	teaPot->setShaderProgram(shaderProgram);
-	cylinder->setShaderProgram(shaderProgram);
-	cone->setShaderProgram(shaderProgram);
 
 
 	//--------------------------------------------------------------------------
@@ -662,15 +497,15 @@ int main(int argc, char* argv[])
 	stream << std::fixed;
 	stream.precision(1);
 
-	stream << teaPot->m_material->getZstick();
+	stream << base->m_material->getZstick();
 	zStickValueString = stream.str();
 	stream.str(string());
 
-	stream << teaPot->m_material->getZmax();
+	stream << base->m_material->getZmax();
 	zMaxValueString = stream.str();
 	stream.str(string());
 
-	stream << teaPot->m_material->getSigma();
+	stream << base->m_material->getSigma();
 	sigmaValueString = stream.str();
 	stream.str(string());
 	
@@ -895,63 +730,63 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 		{
 			if (recorder.m_nearestCollision.m_object == labelZStickDecrease)
 			{
-				double zStick = teaPot->m_material->getZstick();
+				double zStick = base->m_material->getZstick();
 				zStick = zStick - 1;
 
-				teaPot->m_material->setZstick(zStick);
-				zStick = teaPot->m_material->getZstick();
+				base->m_material->setZstick(zStick);
+				zStick = base->m_material->getZstick();
 				stream << zStick;
 				labelZStickValue->setText(stream.str());
 			}
 			if (recorder.m_nearestCollision.m_object == labelZStickIncrease)
 			{
-				double zStick = teaPot->m_material->getZstick();
+				double zStick = base->m_material->getZstick();
 				zStick = zStick + 1;
 				stream << zStick;
 				labelZStickValue->setText(stream.str());
 
-				teaPot->m_material->setZstick(zStick);
+				base->m_material->setZstick(zStick);
 
 			}
 
 			if (recorder.m_nearestCollision.m_object == labelZMaxDecrease)
 			{
-				double zMax = teaPot->m_material->getZmax();
+				double zMax = base->m_material->getZmax();
 				zMax = zMax - 1;
 				
-				teaPot->m_material->setZmax(zMax);
-				zMax = teaPot->m_material->getZmax();
+				base->m_material->setZmax(zMax);
+				zMax = base->m_material->getZmax();
 				stream << zMax;
 				labelZMaxValue->setText(stream.str());
 			}
 			if (recorder.m_nearestCollision.m_object == labelZMaxIncrease)
 			{
-				double zMax = teaPot->m_material->getZmax();
+				double zMax = base->m_material->getZmax();
 				zMax = zMax + 1;
 				stream << zMax;
 				labelZMaxValue->setText(stream.str());
 
-				teaPot->m_material->setZmax(zMax);
+				base->m_material->setZmax(zMax);
 			}
 
 			if (recorder.m_nearestCollision.m_object == labelSigmaDecrease)
 			{
-				double sigma = teaPot->m_material->getSigma();
+				double sigma = base->m_material->getSigma();
 				sigma = sigma - 1;
 
-				teaPot->m_material->setSigma(sigma);
-				sigma = teaPot->m_material->getSigma();
+				base->m_material->setSigma(sigma);
+				sigma = base->m_material->getSigma();
 				stream << sigma;
 				labelSigmaValue->setText(stream.str());
 			}
 			if (recorder.m_nearestCollision.m_object == labelSigmaIncrease)
 			{
-				double sigma = teaPot->m_material->getSigma();
+				double sigma = base->m_material->getSigma();
 				sigma = sigma + 1;
 				stream << sigma;
 				labelSigmaValue->setText(stream.str());
 
-				teaPot->m_material->setSigma(sigma);
+				base->m_material->setSigma(sigma);
 
 			}
 		}
