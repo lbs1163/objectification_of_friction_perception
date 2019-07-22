@@ -214,11 +214,12 @@ void cGenericTool::setRadiusDisplay(double a_radiusDisplay)
 //==============================================================================
 void cGenericTool::setShowContactPoints(bool a_showProxy, 
                                         bool a_showGoal, 
+                                        bool a_showFrictionProxy,
                                         cColorf a_colorLine)
 {
     for (unsigned int i=0; i< m_hapticPoints.size(); i++)
     {
-        m_hapticPoints[i]->setShow(a_showProxy, a_showGoal, a_colorLine);
+        m_hapticPoints[i]->setShow(a_showProxy, a_showGoal, a_showFrictionProxy, a_colorLine);
     }
 }
 

@@ -454,6 +454,7 @@ public:
     //! This method sets the display properties of all haptic points.
     virtual void setShowContactPoints(bool a_showProxy = true, 
                                       bool a_showGoal = false, 
+                                      bool a_showFrictionProxy = false,
                                       cColorf a_colorLine = cColorf(0.5, 0.5, 0.5));
 
 

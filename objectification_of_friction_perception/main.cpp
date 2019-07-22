@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
 	tool->setRadius(toolRadius);
 
     // show proxy and device position of finger-proxy algorithm
-    tool->setShowContactPoints(true, true, cColorf(0.0, 0.0, 0.0));
+    tool->setShowContactPoints(true, true, true, cColorf(0.0, 0.0, 0.0));
 
 	// enable if objects in the scene are going to rotate of translate
 	// or possibly collide against the tool. If the environment

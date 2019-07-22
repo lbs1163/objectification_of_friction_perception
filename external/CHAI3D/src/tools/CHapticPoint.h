@@ -130,12 +130,17 @@ public:
     //! This method returns the the current proxy position of the haptic point in world coordinates.
     cVector3d getGlobalPosProxy();
 
+    //! This method returns the the current friction proxy position of the haptic point in world coordinates.
+    cVector3d getGlobalPosFrictionProxy();
+
     //! This method returns the current desired goal position of the haptic point in local tool coordinates.
     cVector3d getLocalPosGoal();
 
     //! This method returns the current proxy position of the haptic point in local tool coordinates.
     cVector3d getLocalPosProxy();
 
+    //! This method returns the current friction proxy position of the haptic point in local tool coordinates.
+    cVector3d getLocalPosFrictionProxy();
 
     //--------------------------------------------------------------------------
     // PUBLIC METHODS - GENERAL SETTINGS
@@ -165,6 +170,7 @@ public:
     //! This method sets the display options of the goal and proxy spheres
     void setShow(bool a_showProxy = true, 
                  bool a_showGoal = false,
+                 bool a_showFrictionProxy = false,
                  cColorf a_colorLine = cColorf(0.5, 0.5, 0.5));
 
     //! This method Create an audio source for this haptic point.
@@ -237,6 +243,9 @@ public:
 
     //! Sphere object used for rendering the __proxy__ position. 
     cShapeSphere* m_sphereProxy;
+
+    //! Sphere object used for rendering the friction proxy position
+    cShapeSphere* m_sphereFrictionProxy;
 
     //! Sphere object used for rendering the __goal__ position.
     cShapeSphere* m_sphereGoal;

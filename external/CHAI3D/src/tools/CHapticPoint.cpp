@@ -91,6 +91,9 @@ cHapticPoint::cHapticPoint(cGenericTool* a_parentTool)
     // create sphere object used for rendering the Proxy position. 
     m_sphereProxy = new cShapeSphere(0.0);
 
+    // create sphere object used for rendering the Friction Proxy position. 
+    m_sphereFrictionProxy = new cShapeSphere(0.0);
+
     // create sphere object used for rendering the Goal position.
     m_sphereGoal = new cShapeSphere(0.0);
 
@@ -99,6 +102,9 @@ cHapticPoint::cHapticPoint(cGenericTool* a_parentTool)
 
     // define a color for the proxy sphere
     m_sphereProxy->m_material->setGrayDim();
+
+    // define a color for the friction proxy sphere
+    m_sphereFrictionProxy->m_material->setBlack();
 
     // define a color for the goal sphere
     m_sphereGoal->m_material->setGrayLight();
@@ -121,6 +127,7 @@ cHapticPoint::~cHapticPoint()
 
     // delete graphical spheres (proxy and goal)
     delete m_sphereProxy;
+    delete m_sphereFrictionProxy;
     delete m_sphereGoal;
 
     // delete audio sources for impact
@@ -170,6 +177,19 @@ cVector3d cHapticPoint::getGlobalPosProxy()
     return(m_algorithmFingerProxy->getProxyGlobalPosition());
 }
 
+//==============================================================================
+/*!
+     This method returns the current friction proxy position of the haptic point 
+     in world global coordinates.
+
+    \return Friction Proxy position of haptic point.
+*/
+//==============================================================================
+cVector3d cHapticPoint::getGlobalPosFrictionProxy()
+{
+    return(m_algorithmFingerProxy->getFrictionProxyPosition());
+}
+
 
 //==============================================================================
 /*!
@@ -209,6 +229,29 @@ cVector3d cHapticPoint::getLocalPosProxy()
     cVector3d toolGlobalPos = m_parentTool->getGlobalPos();
     cMatrix3d toolGlobalRot = m_parentTool->getGlobalRot();
     cVector3d pos = m_algorithmFingerProxy->getProxyGlobalPosition();
+    toolGlobalRot.transr(rot);
+    pos.sub(toolGlobalPos);
+    rot.mulr(pos, newpos);
+
+    return(newpos);
+}
+
+
+//==============================================================================
+/*!
+     This method returns the current friction proxy position of the haptic point 
+     in local tool coordinates.
+
+    \return Proxy position of haptic point.
+*/
+//==============================================================================
+cVector3d cHapticPoint::getLocalPosFrictionProxy()
+{
+    cMatrix3d rot;
+    cVector3d newpos;
+    cVector3d toolGlobalPos = m_parentTool->getGlobalPos();
+    cMatrix3d toolGlobalRot = m_parentTool->getGlobalRot();
+    cVector3d pos = m_algorithmFingerProxy->getFrictionProxyPosition();
     toolGlobalRot.transr(rot);
     pos.sub(toolGlobalPos);
     rot.mulr(pos, newpos);
@@ -274,6 +317,7 @@ void cHapticPoint::setRadius(double a_radius)
     // set radius of proxy and goal. goal radius is slightly smaller to avoid graphical
     // artifacts when both sphere are located at the same position.
     m_sphereProxy->setRadius(m_radiusDisplay);
+    m_sphereFrictionProxy->setRadius(0.95 * m_radiusDisplay);
     m_sphereGoal->setRadius(0.95 * m_radiusDisplay);
 }
 
@@ -301,6 +345,7 @@ void cHapticPoint::setRadius(double a_radiusDisplay, double a_radiusContact)
     // set radius of proxy and goal. goal radius is slightly smaller to avoid graphical
     // artifacts when both sphere are located at the same position.
     m_sphereProxy->setRadius(m_radiusDisplay);
+    m_sphereFrictionProxy->setRadius(0.95 * m_radiusDisplay);
     m_sphereGoal->setRadius(0.95 * m_radiusDisplay);
 }
 
@@ -336,6 +381,7 @@ void cHapticPoint::setRadiusDisplay(double a_radiusDisplay)
     // set radius of proxy and goal. goal radius is slightly smaller to avoid graphical
     // artifacts when both sphere are located at the same position.
     m_sphereProxy->setRadius(m_radiusDisplay);
+    m_sphereFrictionProxy->setRadius(0.99 * m_radiusDisplay);
     m_sphereGoal->setRadius(0.99 * m_radiusDisplay);
 }
 
@@ -351,11 +397,13 @@ void cHapticPoint::setRadiusDisplay(double a_radiusDisplay)
 */
 //==============================================================================
 void cHapticPoint::setShow(bool a_showProxy, 
-                           bool a_showGoal, 
+                           bool a_showGoal,
+                           bool a_showFrictionProxy,
                            cColorf a_colorLine)
 {
     // update display properties of both spheres
     m_sphereProxy->setShowEnabled(a_showProxy);
+    m_sphereFrictionProxy->setShowEnabled(a_showFrictionProxy);
     m_sphereGoal->setShowEnabled(a_showGoal);
     m_colorLine = a_colorLine;
 }
@@ -675,6 +723,9 @@ void cHapticPoint::render(cRenderOptions& a_options)
     // render proxy sphere
     m_sphereProxy->renderSceneGraph(a_options);
 
+    // render friction proxy sphere
+    m_sphereFrictionProxy->renderSceneGraph(a_options);
+    
     // render goal sphere
     m_sphereGoal->renderSceneGraph(a_options);
 
@@ -710,6 +761,10 @@ void cHapticPoint::updateSpherePositions()
     // update position of proxy sphere
     pos = getLocalPosProxy();
     m_sphereProxy->setLocalPos(pos);
+
+    // update position of friction proxy sphere
+    pos = getLocalPosFrictionProxy();
+    m_sphereFrictionProxy->setLocalPos(pos);
 
     // update position of goal sphere
     pos = getLocalPosGoal();
