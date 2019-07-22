@@ -433,10 +433,15 @@ int main(int argc, char* argv[])
 
 	// set material properties
 	base->m_material->setGrayGainsboro();
-	base->m_material->setStiffness(0.5 * maxStiffness);
-    base->m_material->setSigma(336.079);
-    base->m_material->setZmax(0.00172863);
-    base->m_material->setZstick(0.00194268);
+	base->m_material->setStiffness(0.1 * maxStiffness);
+    
+    base->m_material->setSigma(381.836);
+    base->m_material->setZmax(0.00148789);
+    base->m_material->setZstick(0.00175528);
+    
+    //base->m_material->setSigma(1);
+    //base->m_material->setZmax(0.1);
+    //base->m_material->setZstick(0.1);
 
 	// build collision detection tree
 	base->createAABBCollisionDetector(toolRadius);
@@ -497,8 +502,8 @@ int main(int argc, char* argv[])
 	string zMaxValueString;
 	string sigmaValueString;
 
-	stream << std::fixed;
-	stream.precision(1);
+	stream << std::scientific;
+	stream.precision(3);
 
 	stream << base->m_material->getZstick();
 	zStickValueString = stream.str();
@@ -725,7 +730,7 @@ void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a
 		cCollisionSettings settings;
 
 		std::ostringstream stream;
-		stream << std::fixed;
+		stream << std::scientific;
 		stream.precision(3);		
 
 		bool hit = camera->selectFrontLayer(mouseX, (height - mouseY), width, height, recorder, settings);
